@@ -19,6 +19,9 @@ class MyLinkedIn
 			:secret => "365b2c3d-c9b6-4fd7-9c02-9a49ecfec0c1" 
 		}
 		@client.authorize_from_access(access[:token], access[:secret])
+		
+		@cache_dir = 'cache'
+		@max_age = 604800 # Cache for 7 days (in seconds)
 	end
 
 	# Get the basic profile
@@ -26,11 +29,25 @@ class MyLinkedIn
 		@client.profile.to_hash
 	end
 
-	# Get all the first-level connections
+	# Get all the first-level connections, and cache result because the call is expensive
 	def connections
-		@client.connections.to_hash["all"]
-	end
+		file_path = File.join(@cache_dir, "connections")
+		c = nil # Declare before use
+		
+		if (File.exists? file_path) && (Time.now - File.mtime(file_path) < @max_age)
+			File.open(file_path, "r") do |f|
+				c = Marshal.load(f)
+			end
+		else
+			File.open(file_path, "w") do |f|
+				c = @client.connections.to_hash["all"]
+				Marshal.dump(c, f)
+			end
+		end
+		return c
 
+	end
+	
 end
 
 # The End
