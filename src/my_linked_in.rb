@@ -7,6 +7,8 @@ require 'linkedin'
 # An interface to the LinkedIn API 
 class MyLinkedIn
 
+	attr_reader :client
+	
 	# Create and authorise the client from the hard-coded access keys
 	def initialize
 		consumer = { :token => "3l5b9vdnixqs", :secret => "onY0JQlwkEcZwf6V" }
@@ -20,7 +22,7 @@ class MyLinkedIn
 		}
 		@client.authorize_from_access(access[:token], access[:secret])
 		
-		@cache_dir = 'cache'
+		@cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "cache"))
 		@max_age = 604800 # Cache for 7 days (in seconds)
 	end
 
@@ -45,7 +47,6 @@ class MyLinkedIn
 			end
 		end
 		return c
-
 	end
 	
 end
