@@ -24,6 +24,7 @@ Adventures in RDF and social connections with Ruby.
 - linkedin
 - rspec
 - rdf
+- rdf-turtle
 - rake
 
 # To-do
@@ -36,6 +37,8 @@ Adventures in RDF and social connections with Ruby.
 
 ## Done
 
+- Export the basic profile as RDF
+- Cache basic_profile call to speed up unit testing
 - Move testing to RSpec.
 - Cache the expensive call for connections from LinkedIn.
 - Set up relative cache directory to source file

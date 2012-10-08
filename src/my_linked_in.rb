@@ -22,31 +22,55 @@ class MyLinkedIn
 		}
 		@client.authorize_from_access(access[:token], access[:secret])
 		
-		@cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "cache"))
-		@max_age = 604800 # Cache for 7 days (in seconds)
+		@@cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "cache"))
+		@@max_age = 604800 # Cache for 7 days (in seconds)
 	end
 
-	# Get the basic profile
-	def basic_profile
-		@client.profile.to_hash
+	#-------------------------------
+	# Get the raw basic profile
+	def get_basic_profile
+		read_and_cache("basic_profile") do
+			@client.profile.to_hash
+		end
 	end
 
-	# Get all the first-level connections, and cache result because the call is expensive
-	def connections
-		file_path = File.join(@cache_dir, "connections")
-		c = nil # Declare before use
+	# Get all the raw first-level connections, and cache result because the call is expensive
+	def get_connections
+		read_and_cache("connections") do
+			@client.connections.to_hash["all"]
+		end
+	end
+	
+	#-------------------------------
+	# Read and cache the data
+	def read_and_cache(label="data", &block)
+		file_path = File.join(@@cache_dir, label)
+		data = nil # Declare before use
 		
-		if (File.exists? file_path) && (Time.now - File.mtime(file_path) < @max_age)
+		if (File.exists? file_path) && (Time.now - File.mtime(file_path) < @@max_age)
 			File.open(file_path, "r") do |f|
-				c = Marshal.load(f)
+				data = Marshal.load(f)
 			end
 		else
 			File.open(file_path, "w") do |f|
-				c = @client.connections.to_hash["all"]
-				Marshal.dump(c, f)
+				data = block.call
+				Marshal.dump(data, f)
 			end
 		end
-		return c
+		return data
+	end
+	
+	#-------------------------------
+	# These two methods can be overridden to format the responses differently.
+	
+	# Returns the basic profile of the LinkedIn client.
+	def basic_profile
+		self.get_basic_profile
+	end
+	
+	# Returns the first-level connections for the LinkedIn client
+	def connections
+		self.get_connections
 	end
 	
 end

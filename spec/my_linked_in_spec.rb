@@ -15,12 +15,13 @@ describe MyLinkedIn do
 	
 	it "returns my basic profile" do
 		me = @li.basic_profile
-		me.first_name.should eq("Andrew")
+		me["first_name"].should eq("Andrew")
 	end
 	
 	it "returns my connections" do
-		conn = @li.connections
-		conn.size.should > 0
+		conns = @li.connections
+		conns.size.should > 0
+		conns[0]["first_name"].should eq("Sherine")
 	end
 	
 end
