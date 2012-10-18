@@ -6,7 +6,8 @@ require 'network_rdf'
 describe NetworkRDF do
 	
 	before do
-		@net = NetworkRDF.new(MyLinkedIn.new)
+		@li = MyLinkedIn.new
+		@net = NetworkRDF.new(@li)
 	end
 	
 	it "is initialised from a LinkedIn profile" do
@@ -16,7 +17,22 @@ describe NetworkRDF do
 	it "stores the subject as RDF statements in a graph" do
 		@net.add_subject
 		g = @net.graph
-		g.data.size.should eq(2)
+		g.count.should eq(2)
+	end
+	
+	it "adds a connection" do
+		n = @net.graph.count
+		c = @li.connections
+		@net.add_connection(c[0])
+		@net.graph.count.should be >n
+	end
+	
+	it "returns Turtle" do
+		
+	end
+	
+	it "returns JSON" do
+		
 	end
 	
 end

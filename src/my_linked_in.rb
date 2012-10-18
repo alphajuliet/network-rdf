@@ -4,6 +4,11 @@
 require 'rubygems'
 require 'linkedin'
 
+# Useful function to turn string keys into symbols
+def symbolize_keys(h) 
+	Hash[h.map{|(k,v)| [k.to_sym,v]}]
+end
+
 # An interface to the LinkedIn API 
 class MyLinkedIn
 
@@ -28,19 +33,25 @@ class MyLinkedIn
 
 	#-------------------------------
 	# Get the raw basic profile
-	def get_basic_profile
+	def basic_profile
 		read_and_cache("basic_profile") do
-			@client.profile.to_hash
+			symbolize_keys(@client.profile.to_hash)
 		end
 	end
 
 	# Get all the raw first-level connections, and cache result because the call is expensive
-	def get_connections
+	def connections
 		read_and_cache("connections") do
-			@client.connections.to_hash["all"]
+			symbolize_keys(@client.connections.to_hash)[:all]
 		end
 	end
 	
+	# Get a profile for a given ID
+	def connection_by_id(id, fields=["first_name", "last_name"])
+		options = {:id => id, :fields => URI::encode(fields.join(','))}
+		symbolize_keys(@client.profile(options).to_hash)
+	end
+
 	#-------------------------------
 	# Read and cache the data
 	def read_and_cache(label="data", &block)
@@ -59,20 +70,7 @@ class MyLinkedIn
 		end
 		return data
 	end
-	
-	#-------------------------------
-	# These two methods can be overridden to format the responses differently.
-	
-	# Returns the basic profile of the LinkedIn client.
-	def basic_profile
-		self.get_basic_profile
-	end
-	
-	# Returns the first-level connections for the LinkedIn client
-	def connections
-		self.get_connections
-	end
-	
+		
 end
 
 # The End
