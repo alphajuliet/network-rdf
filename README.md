@@ -21,13 +21,18 @@ Adventures in RDF and social connections with Ruby.
 
 ## Required gems
 
-- linkedin
-- rspec
-- rdf
-- rdf-turtle
-- rake
+- linkedin 0.3.7
+- rspec 2.11.0
+- rdf 0.3.8
+- rdf-turtle 0.1.2
+- rdf-json 0.3.0
+- rake 0.9.2.2
+- rest-client 1.6.7
 
 # To-do
+
+- Export connections in JSON
+- Visualise companies in a graph in the browser
 
 ## Backlog
 
