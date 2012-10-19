@@ -1,4 +1,3 @@
-# Ignore the cache
+# Ignore the cache and data folders
 cache
-doc
 data

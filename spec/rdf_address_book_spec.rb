@@ -18,9 +18,7 @@ describe RDFAddressBook do
 	
 	it "loads entries" do
 		@ab.read_vcards(File.join(data_dir, "contacts-2012-10-19.vcf"))
-		@ab.graph.size.should eq(298)
-		x = @ab.graph.first
-		x.subject.to_s.should eq("http://alphajuliet.com/ns/people#david-clarke")
+		@ab.graph.size.should be >(0)
 	end
 	
 end
