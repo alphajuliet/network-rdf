@@ -11,8 +11,8 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 desc "Make sure the gems are up to date."
-task :init do
-	bundler install
+task :check do
+	sh 'bundle install'
 end
 
 desc "Export all my contacts."
@@ -26,8 +26,7 @@ desc "Generate RDF/Turtle from the contacts VCard file."
 task :turtle => [:export] do
 	require 'src/rdf_address_book'	
 	data_dir = File.expand_path(File.join(File.dirname(__FILE__), "data"))
-	ab = RDFAddressBook.new
-	ab.read_vcards(File.join(data_dir, "contacts-#{today}.vcf"))
+	ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
 	puts ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
 end
 
