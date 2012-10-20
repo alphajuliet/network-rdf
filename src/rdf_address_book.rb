@@ -17,6 +17,13 @@ class RDFAddressBook
 		@graph = RDF::Graph.new("http://alphajuliet.com/ns/network-rdf")
 	end
 	
+	def self.new_from_file(filename)
+		ab = RDFAddressBook.new
+		ab.read_vcards(filename)
+		ab.convert_to_rdf
+		ab
+	end
+	
 	#------------------------
 	def define_prefixes
 		@ajp = RDF::Vocabulary.new("http://alphajuliet.com/ns/person#")
@@ -30,8 +37,13 @@ class RDFAddressBook
 	#------------------------
 	# Read and convert to RDF
 	def read_vcards(filename)
-		vcards = Vpim::Vcard.decode(File.open(filename))
-		vcards.each { |contact| process(contact) }
+		@vcards = Vpim::Vcard.decode(File.open(filename))
+	end
+
+	def convert_to_rdf
+		@vcards.each do |contact| 
+			process(contact)
+		end
 	end
 	
 	#------------------------
@@ -39,14 +51,14 @@ class RDFAddressBook
 	def process(contact)		
 		if contact.name.given.empty?
 			create_organisation(contact)
-		else # We have a person
+		else
 			add_person(contact)
 		end
 	end
 	
 	#------------------------
+
 	def add_person(vcard)
-		
 		# id = (vcard.name.fullname).downcase.tr(' ', '-').tr("'&", "")
 		id = vcard.values("X-ABUID").first
 		person = @ajp[id]
@@ -78,8 +90,8 @@ class RDFAddressBook
 		vcard.emails.each do |e|
 			email = RDF::Node.new
 			@graph << [target, @v[:email], email]
-			@graph << [target, RDF[:type], @v[e.location.first]]
-			@graph << [target, RDF[:value], e.to_s]
+			@graph << [email, RDF[:type], @v[e.location.first]]
+			@graph << [email, RDF[:value], e.to_s]
 		end		
 	end
 	
