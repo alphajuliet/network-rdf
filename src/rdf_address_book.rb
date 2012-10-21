@@ -69,7 +69,7 @@ class RDFAddressBook
 		
 		add_card(person, vcard)
 		add_organisation(person, vcard)
-		add_social_profile(person, vcard)
+		add_social_profiles(person, vcard)
 		
 	end
 	
@@ -145,9 +145,12 @@ class RDFAddressBook
 	end
 	
 	#------------------------
-	def add_social_profile(card, vcard)
+	def add_social_profiles(target, vcard)
 		vcard.values("X-SOCIALPROFILE") do |p|
-			@graph << [card, RDF::RDFS[:seeAlso], p.to_s]
+			acct = RDF::Node.new
+			@graph << [target, RDF::FOAF[:account], acct]
+			@graph << [acct, RDF[:type], RDF::FOAF[:OnlineAccount]]
+			@graph << [acct, RDF::FOAF[:accountName], p.to_s]
 		end
 	end
 	

@@ -62,6 +62,18 @@ describe RDFAddressBook do
 		solutions.first[:address].should eq("actan@brainmates.com.au")
 	end
 	
+	it "contains two social profiles" do
+		query = RDF::Query.new do
+			pattern [:p, RDF[:type], RDF::FOAF[:Person]]
+			pattern [:p, RDF::FOAF[:account], :acct]
+			pattern [:acct, RDF[:type], RDF::FOAF[:OnlineAccount]]
+			pattern [:acct, RDF::FOAF[:accountName], :acctName]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(2)		
+		solutions.first[:acctName].should eq("http://www.linkedin.com/in/adriennetan")
+	end
+	
 	it "prints out the RDF" do
 		puts @ab_test1.to_turtle
 	end
