@@ -23,7 +23,7 @@ task :export do
 end
 
 desc "Generate RDF/Turtle from the contacts VCard file."
-task :turtle => [:export] do
+task :turtle do
 	require 'src/rdf_address_book'	
 	data_dir = File.expand_path(File.join(File.dirname(__FILE__), "data"))
 	ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
@@ -31,7 +31,7 @@ task :turtle => [:export] do
 end
 
 desc "Load RDF/Turtle into 4store. Requires the 4store web server to have been started."
-task :loadrdf => [:turtle] do
+task :loadrdf do
 	require 'rubygems'
 	require 'rest_client'
 	
@@ -44,5 +44,8 @@ task :loadrdf => [:turtle] do
 	response = RestClient.put endpoint + graph, File.read(filename), :content_type => 'text/turtle'
 	puts "Response #{response.code}: #{response.to_str}"	
 end
+
+desc "Run the whole sequence"
+task :all => [:export, :turtle, :loadrdf]
 
 # The End
