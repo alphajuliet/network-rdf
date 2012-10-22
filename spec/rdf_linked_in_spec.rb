@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
-require 'network_rdf'
+require 'rdf_linked_in'
 
-describe NetworkRDF do
+describe RDFLinkedIn do
 	
 	before do
 		@li = MyLinkedIn.new
-		@net = NetworkRDF.new(@li)
+		@net = RDFLinkedIn.new(@li)
 	end
 	
 	it "is initialised from a LinkedIn profile" do
@@ -26,15 +26,7 @@ describe NetworkRDF do
 		@net.add_connection(c[0])
 		@net.graph.count.should be >n
 	end
-	
-	it "returns Turtle" do
 		
-	end
-	
-	it "returns JSON" do
-		
-	end
-	
 end
 
 # The End

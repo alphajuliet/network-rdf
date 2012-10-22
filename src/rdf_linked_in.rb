@@ -4,22 +4,24 @@ require 'rubygems'
 require 'rdf'
 require 'rdf/turtle'
 require 'rdf/json'
+require 'my_linked_in'
+require 'my_prefixes'
+require 'pp'
 
-class NetworkRDF
+class RDFLinkedIn
 	
 	attr_reader :graph
 	
-	def initialize(linkedin)
+	def initialize(linkedin=MyLinkedIn.new)
 		@source = linkedin
 		@graph = RDF::Graph.new
 	end
-	
+		
 	def add_subject
-		ajp = RDF::Vocabulary.new("http://alphajuliet.com/ns/person#")
 		p = @source.basic_profile
 		name = p[:first_name] + " " + p[:last_name]
-		@graph << [ajp.AndrewJ, RDF.type, RDF::FOAF.Person]
-		@graph << [ajp.AndrewJ, RDF::FOAF.name, name]
+		@graph << [RDF::AJP[:AndrewJ], RDF[:type], RDF::FOAF[:Person]]
+		@graph << [RDF::AJP[:AndrewJ], RDF::FOAF[:name], name]
 	end
 	
 	def add_connections
@@ -28,42 +30,50 @@ class NetworkRDF
 		end
 	end
 	
-	def add_connection(c)
-		
-		ajp = RDF::Vocabulary.new("http://alphajuliet.com/ns/person#")
-		
+	def add_connection(conn)	
 		begin
-			ref = RDF::URI.new(c[:api_standard_profile_request][:url])
-			name = c[:first_name] + " " + c[:last_name]
-			location = c[:location][:name]
-			id = c[:id]
+			person = RDF::URI.new(conn[:api_standard_profile_request][:url])
+			name = conn[:first_name] + " " + conn[:last_name]
+			location = conn[:location][:name]
+			id = conn[:id]
 			
-			@graph << [ref, RDF.type, RDF::FOAF.Person]
-			@graph << [ref, RDF::FOAF.name, name]
-			@graph << [ref, RDF::FOAF.based_near, location]
-			@graph << [ref, RDF::FOAF.knows, ajp.AndrewJ]
-			@graph << [ref, RDF::FOAF.depiction, c[:picture_url]]
+			@graph << [person, RDF.type, RDF::FOAF[:Person]]
+			@graph << [person, RDF::FOAF[:name], name]
+			@graph << [person, RDF::FOAF[:based_near], location]
+			@graph << [RDF::AJP[:AndrewJ], RDF::FOAF[:knows], person]
+			@graph << [person, RDF::FOAF[:depiction], conn[:picture_url]] unless conn[:picture_url].nil?
 
-			profile = @source.connection_by_id(id, ["positions"])
-			company_id = profile[:positions][:all][0][:company][:id] unless profile.nil?
-						
+			pos = @source.positions(id)
+			if (pos[:positions][:total] > 0)
+				c_id = pos[:positions][:all][0][:company][:id]
+				unless c_id.nil?
+					c_data = @source.company_by_id(c_id)
+					c_url = c_data[:website_url]
+					@graph << [person, RDF::FOAF[:workplaceHomePage], c_url] unless c_url.nil?
+				end
+			end
+			
 		rescue NoMethodError => e
-			# We just ignore any exceptions from missing data in the chain of accesses
-			# $stderr.puts "\nError: Missing info for connection <#{name}>\n  #{e}"
+			# Inform but continue
+			$stderr.puts "\nError: Missing info for connection <#{name}>\n  #{e}"
 			# $stderr.puts e.backtrace
 		end
 		
 	end
-	
+		
 	def to_turtle
 		@graph.dump(:turtle)
 	end
 	
-	def to_json(fname)
+	def write_as_turtle(fname)
+		RDF::Turtle::Writer.open(fname) do |writer|
+			writer << @graph
+		end
+	end	
+	
+	def write_as_json(fname)
 		RDF::JSON::Writer.open(fname) do |writer|
-			graph.each_statement do |statement|
-				writer << statement
-			end
+			writer << @graph
 		end
 	end
 	
