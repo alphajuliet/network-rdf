@@ -4,39 +4,50 @@
 require 'rubygems'
 require 'linkedin'
 
-consumer = { :token => '3l5b9vdnixqs', :secret => 'onY0JQlwkEcZwf6V' }
-config = { :request_token_path => '/uas/oauth/requestToken?scope=r_basicprofile+r_network' }
-client = LinkedIn::Client.new(consumer[:token], consumer[:secret], config)
+class LinkedInAuthoriser
 
-def get_access_token(request_token)
+	attr_reader :access_token, :client
+	
+	def initialize
+		@consumer = { :token => '3l5b9vdnixqs', :secret => 'onY0JQlwkEcZwf6V' }
+		@config = { :request_token_path => '/uas/oauth/requestToken?scope=r_basicprofile+r_network' }
+		@client = LinkedIn::Client.new(@consumer[:token], @consumer[:secret], @config)
+		
+		# Retrieved 26-Sep
+		@access_token = [ "393d6b72-a353-4402-bf8e-61f141d8f6e6", "365b2c3d-c9b6-4fd7-9c02-9a49ecfec0c1" ]
+	end
+	
+	def authorise
+		@client.authorize_from_access(@access_token[0], @access_token[1])
+		@client
+	end
+	
+	def get_access_token
+		rtoken = @client.request_token.token
+		rsecret = @client.request_token.secret
 
-	rtoken = request_token.token
-	rsecret = request_token.secret
+		url = @client.request_token.authorize_url
+		puts "Go to #{url}"
+		print "Enter verifier: " 
+		verifier = gets.strip
+		@access_token = @client.authorize_from_request(rtoken, rsecret, verifier)
+		puts "Access token: "
+		puts @access_token
+	end
 	
-	# to test from your desktop, open the following url in your browser
-	# and record the verifier code it gives you
-	url = client.request_token.authorize_url
-	puts "Go to #{url}"
-	puts "Enter verifier: " 
-	verifier = gets.strip
+	def test_access_token
+		authorise
+		puts "# My profile"
+		@client.profile.to_hash.each { |k,v| puts "#{k}: #{v}" }
 	
-	client.authorize_from_request(rtoken, rsecret, verifier)
+		#puts "# My connections"
+		#connections = client.connections.to_hash["all"]
+		#puts connections.length
+		#connections.each do |c|
+		#	puts c.to_hash.values_at("first_name", "last_name").join(" ")
+		#end
+	end
+		
 end
-
-# puts get_access_token(client)
-# Received 26-Sep
-access_token = { :token => "393d6b72-a353-4402-bf8e-61f141d8f6e6", 
-								 :secret => "365b2c3d-c9b6-4fd7-9c02-9a49ecfec0c1" }
-	
-client.authorize_from_access(access_token[:token], access_token[:secret])
-puts "# My profile"
-client.profile.to_hash.each { |k,v| puts "#{k}: #{v}" }
-
-#puts "# My connections"
-#connections = client.connections.to_hash["all"]
-#puts connections.length
-#connections.each do |c|
-#	puts c.to_hash.values_at("first_name", "last_name").join(" ")
-#end
 
 # The End
