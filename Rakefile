@@ -7,45 +7,72 @@ require 'rake/clean'
 t = Time.new
 today = t.strftime("%Y-%m-%d")
 
+# Directories
+here = File.dirname(__FILE__)
+data_dir = File.expand_path(File.join(here, "data"))
+
 RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
+#----------------
 desc "Make sure the gems are up to date."
 task :check do
 	sh 'bundle install'
 end
 
-desc "Export all my contacts."
-task :export do
-	sh "osascript src/export-all-contacts.scpt"
-	source_dir = File.join(ENV["HOME"], "Downloads")
-	FileUtils.mv("#{source_dir}/contacts.vcf", "./data/contacts-#{today}.vcf")
-end
+#----------------
+namespace :addressbook do
 
-desc "Generate RDF/Turtle from the contacts VCard file."
-task :turtle do
-	require 'src/rdf_address_book'	
-	data_dir = File.expand_path(File.join(File.dirname(__FILE__), "data"))
-	ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
-	puts ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
-end
-
-desc "Load RDF/Turtle into 4store. Requires the 4store web server to have been started."
-task :loadrdf do
-	require 'rubygems'
-	require 'rest_client'
+	desc "Export all my contacts."
+	task :export do
+		sh "osascript src/export-all-contacts.scpt"
+		source_dir = File.join(ENV["HOME"], "Downloads")
+		FileUtils.mv(File.join(source_dir, "contacts.vcf"), File.join(data_dir, "contacts-#{today}.vcf"))
+	end
 	
-	# filename = ARGV[0]
-	filename = "data/contacts-#{today}.ttl"
-	graph    = 'http://alphajuliet.com/ns/network-rdf'
-	endpoint = 'http://localhost:8000/data/'
-	
-	puts "Loading #{filename} into #{graph} in 4store"
-	response = RestClient.put endpoint + graph, File.read(filename), :content_type => 'text/turtle'
-	puts "Response #{response.code}: #{response.to_str}"	
+	desc "Generate RDF/Turtle from the contacts VCard file."
+	task :turtle do
+		require 'src/rdf_address_book'	
+		ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
+		puts ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
+	end
+
+	desc "Load RDF/Turtle into 4store. Requires the 4store web server to have been started."
+	task :load do
+		require 'rubygems'
+		require 'rest_client'
+		
+		filename = File.join(data_dir, "contacts-#{today}.ttl")
+		graph    = 'http://alphajuliet.com/ns/network-rdf'
+		endpoint = 'http://localhost:8000/data/'
+		
+		puts "Loading #{filename} into #{graph} in 4store"
+		response = RestClient.put endpoint + graph, File.read(filename), :content_type => 'text/turtle'
+		puts "Response #{response.code}: #{response.to_str}"	
+	end
+
+	desc "Export, transform, and load contact info into the triple store."
+	task :etl => ['addressbook:export', 'addressbook:turtle', 'addressbook:load']
+
 end
 
-desc "Run the whole sequence"
-task :all => [:export, :turtle, :loadrdf]
+#----------------
+namespace :rdfstore do
+
+	desc "Create and start the 4store triple store"
+	task :start do
+		rdf_store_path = "/Applications/4store.app/Contents/MacOS/bin"
+		setup = File.join(rdf_store_path, "4s-backend-setup")
+		start = File.join(rdf_store_path, "4s-backend")
+		server = File.join(rdf_store_path, "4s-httpd")
+		instance = "test"
+		sh "#{setup} #{instance}"
+		sh "#{start} #{instance}"
+		sh "#{server} -p 8000 #{instance}"
+	end
+
+end
+
+#----------------
 
 # The End

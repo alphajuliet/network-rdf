@@ -33,8 +33,8 @@ describe RDFAddressBook do
 		
 	it "contains a VCard with the fullname" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::URI.new("http://www.w3.org/2006/vcard/ns#VCard")]
-			pattern [:card, RDF::URI.new("http://www.w3.org/2006/vcard/ns#fn"), :name]
+			pattern [:card, RDF[:type], RDF::V[:VCard]]
+			pattern [:card, RDF::V[:fn], :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
@@ -44,8 +44,8 @@ describe RDFAddressBook do
 	
 	it "contains all the phone numbers" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::URI.new("http://www.w3.org/2006/vcard/ns#VCard")]
-			pattern [:card, RDF::URI.new("http://www.w3.org/2006/vcard/ns#tel"), :tel]
+			pattern [:card, RDF[:type], RDF::V[:VCard]]
+			pattern [:card, RDF::V[:tel], :tel]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)
@@ -53,8 +53,8 @@ describe RDFAddressBook do
 	
 	it "contains an email address" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::URI.new("http://www.w3.org/2006/vcard/ns#VCard")]
-			pattern [:card, RDF::URI.new("http://www.w3.org/2006/vcard/ns#email"), :e]
+			pattern [:card, RDF[:type], RDF::V[:VCard]]
+			pattern [:card, RDF::V[:email], :e]
 			pattern [:e, RDF[:value], :address]
 		end
 		solutions = query.execute(@ab_test1.graph)
@@ -75,7 +75,7 @@ describe RDFAddressBook do
 	end
 	
 	it "prints out the RDF" do
-		puts @ab_test1.to_turtle
+		# puts @ab_test1.to_turtle
 	end
 	
 end
