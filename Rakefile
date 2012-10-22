@@ -1,5 +1,6 @@
 #!/usr/bin/env rake
 
+$:.unshift File.join(File.dirname(__FILE__), "src")
 require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
@@ -32,7 +33,7 @@ namespace :addressbook do
 	
 	desc "Generate RDF/Turtle from the contacts VCard file."
 	task :turtle do
-		require 'src/rdf_address_book'	
+		require 'rdf_address_book'	
 		ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
 		puts ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
 	end
@@ -54,6 +55,34 @@ namespace :addressbook do
 	desc "Export, transform, and load contact info into the triple store."
 	task :etl => ['addressbook:export', 'addressbook:turtle', 'addressbook:load']
 
+end
+
+#----------------
+namespace :linkedin do
+	
+	desc "Get an updated access token from LinkedIn"
+	task :get_token do
+		require 'authorise'
+		auth = LinkedInAuthoriser.new
+		auth.get_access_token
+	end
+	
+	desc "Test the LinkedIn access token"
+	task :test do
+		require 'authorise'
+		auth = LinkedInAuthoriser.new
+		auth.test_access_token
+	end
+	
+	desc "Transform my LinkedIn connectsion to RDF"
+	task :turtle do
+		require 'rdf_linked_in'
+		n = RDFLinkedIn.new
+		n.add_subject
+		n.add_connections
+		n.write_as_turtle(File.join(data_dir, "connections-#{today}.ttl"))
+	end
+	
 end
 
 #----------------
