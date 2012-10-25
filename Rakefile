@@ -22,7 +22,7 @@ task :check do
 end
 
 #----------------
-namespace :addressbook do
+namespace :contacts do
 
 	desc "Export all my contacts."
 	task :export do
@@ -103,5 +103,14 @@ namespace :rdfstore do
 end
 
 #----------------
+namespace :example do
+	
+	desc "Run a SPARQL query"
+	task :query do
+		load 'examples/query.rb'
+	end
+	
+end
+
 
 # The End
