@@ -11,6 +11,7 @@ describe RDFAddressBook do
 	before do
 		@ab_empty = RDFAddressBook.new
 		@ab_test1 = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-test1.vcf"))
+		@ab_test1.convert_to_rdf
 	end
 		
 	it "gets instantiated" do
@@ -75,7 +76,7 @@ describe RDFAddressBook do
 	end
 	
 	it "prints out the RDF" do
-		# puts @ab_test1.to_turtle
+		#puts @ab_test1.to_turtle
 	end
 	
 end
