@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # Additional RDF prefixes
 
+require 'rubygems'
+require 'rdf'
 module RDF
 	AJP 	= RDF::Vocabulary.new("http://alphajuliet.com/ns/person#")
 	AJO 	= RDF::Vocabulary.new("http://alphajuliet.com/ns/org#")
