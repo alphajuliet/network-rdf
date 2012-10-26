@@ -35,7 +35,8 @@ namespace :contacts do
 	task :turtle do
 		require 'rdf_address_book'	
 		ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
-		puts ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
+		ab.convert_to_rdf
+		ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
 	end
 
 	desc "Load RDF/Turtle into 4store. Requires the 4store web server to have been started."
@@ -53,7 +54,7 @@ namespace :contacts do
 	end
 
 	desc "Export, transform, and load contact info into the triple store."
-	task :etl => ['addressbook:export', 'addressbook:turtle', 'addressbook:load']
+	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load']
 
 end
 
@@ -103,11 +104,16 @@ namespace :rdfstore do
 end
 
 #----------------
-namespace :example do
+namespace :examples do
 	
 	desc "Run a SPARQL query"
 	task :query do
 		load 'examples/query.rb'
+	end
+	
+	desc "Run another SPARQL query"
+	task :query3 do
+		load 'examples/query3.rb'
 	end
 	
 end

@@ -5,7 +5,7 @@ require 'rubygems'
 require 'vpim/vcard'
 require 'rdf'
 require 'rdf/turtle'
-require 'rdf_vcard'
+require 'rdf_vcard_new'
 
 class RDFAddressBook
 
@@ -31,7 +31,7 @@ class RDFAddressBook
 	def convert_to_rdf
 		@vcards.each do |vcard|
 			triples = RDFVCard.new(vcard).to_rdf
-			triples.each { |t| @graph << t } 
+			triples.each { |tr| @graph << tr } 
 		end
 	end
 	

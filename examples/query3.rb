@@ -8,12 +8,13 @@ require 'my_prefixes'
 query = '
 SELECT ?name WHERE {
 	?card a v:VCard ;
-        v:fn ?name .
+				v:fn ?name .
 	OPTIONAL { 
 		?card v:email ?e.
 	}
 	FILTER (!bound(?e))
-}'
+}
+'
 
 s = SparqlClient.new
 s.run_query(query, '//sparql:binding/sparql:literal') do |e|

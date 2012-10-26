@@ -29,6 +29,7 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
+		solutions.first[:person].should eq(RDF::AJP["D259AF02-B909-4EAC-96AB-778104D36B57"])
 		solutions.first[:name].should eq("Adrienne Tan")
 	end
 		
@@ -74,6 +75,19 @@ describe RDFAddressBook do
 		solutions.count.should eq(2)		
 		solutions.first[:acctName].should eq("http://www.linkedin.com/in/adriennetan")
 	end
+	
+=begin
+	it "contains a relationship" do
+		query = RDF::Query.new do
+			pattern [:card, RDF::REL.spouse_of, :p]
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::FOAF.name, :name]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(1)
+		solutions.first[:name].should eq("Nick Coster")		
+	end
+=end
 	
 	it "prints out the RDF" do
 		#puts @ab_test1.to_turtle
