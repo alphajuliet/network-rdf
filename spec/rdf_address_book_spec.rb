@@ -29,8 +29,8 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
-		solutions.first[:person].should eq(RDF::AJP["D259AF02-B909-4EAC-96AB-778104D36B57"])
-		solutions.first[:name].should eq("Adrienne Tan")
+		solutions.first[:person].should eq(RDF::AJP["6D9E0CBF-C599-4BEC-8C01-B1B699914D04"])
+		solutions.first[:name].should eq("Jane Smith")
 	end
 		
 	it "contains a VCard with the fullname" do
@@ -41,10 +41,10 @@ describe RDFAddressBook do
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
 		solutions.first.bound?(:name).should be_true
-		solutions.first[:name].should eq("Adrienne Tan")
+		solutions.first[:name].should eq("Jane Smith")
 	end
 	
-	it "contains all the phone numbers" do
+	it "contains two phone numbers" do
 		query = RDF::Query.new do
 			pattern [:card, RDF[:type], RDF::V[:VCard]]
 			pattern [:card, RDF::V[:tel], :tel]
@@ -53,15 +53,15 @@ describe RDFAddressBook do
 		solutions.count.should eq(2)
 	end
 	
-	it "contains an email address" do
+	it "contains two email addresses" do
 		query = RDF::Query.new do
 			pattern [:card, RDF[:type], RDF::V[:VCard]]
 			pattern [:card, RDF::V[:email], :e]
 			pattern [:e, RDF[:value], :address]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(1)		
-		solutions.first[:address].should eq("actan@brainmates.com.au")
+		solutions.count.should eq(2)		
+		solutions.first[:address].should eq("jane.smith@example.org")
 	end
 	
 	it "contains two social profiles" do
@@ -73,7 +73,7 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)		
-		solutions.first[:acctName].should eq("http://www.linkedin.com/in/adriennetan")
+		solutions.first[:acctName].should eq("janesmith12345")
 	end
 	
 =begin
@@ -90,7 +90,7 @@ describe RDFAddressBook do
 =end
 	
 	it "prints out the RDF" do
-		#puts @ab_test1.to_turtle
+		puts @ab_test1.to_turtle
 	end
 	
 end
