@@ -38,14 +38,7 @@ class LinkedInAuthoriser
 	def test_access_token
 		authorise
 		puts "# My profile"
-		@client.profile.to_hash.each { |k,v| puts "#{k}: #{v}" }
-	
-		#puts "# My connections"
-		#connections = client.connections.to_hash["all"]
-		#puts connections.length
-		#connections.each do |c|
-		#	puts c.to_hash.values_at("first_name", "last_name").join(" ")
-		#end
+		@client.profile.to_hash.each { |k,v| puts "#{k}: #{v}" }	
 	end
 		
 end
