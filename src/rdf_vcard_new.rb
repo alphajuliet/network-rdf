@@ -79,8 +79,7 @@ class RDFVCard < VCardEventer
 			company = RDF::AJO[company_id]
 			@triples << [@membership, RDF::ORG.organization, company]
 			@triples << [company, RDF.type, RDF::ORG.formalOrganization]
-			@triples << [company, RDF::SKOS.altLabel, org.first]
-			@triples << [company, RDF::RDFS.label, org.first]	
+			@triples << [company, RDF::SKOS.prefLabel, org.first]
 		end		
 	end
 
