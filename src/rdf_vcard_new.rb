@@ -75,7 +75,7 @@ class RDFVCard < VCardEventer
 			@triples << [@membership, RDF::ORG.member, @subject]
 			
 			# Add the organisation
-			company_id = org.first.downcase.tr('.& ', ' -')
+			company_id = org.first.downcase.tr('\.&+ ', ' -')
 			company = RDF::AJO[company_id]
 			@triples << [@membership, RDF::ORG.organization, company]
 			@triples << [company, RDF.type, RDF::ORG.formalOrganization]
@@ -92,7 +92,9 @@ class RDFVCard < VCardEventer
 			
 	def do_x_abuid(value)
 		id = value.first.split(':').first
-		@triples.map! { |tr| (tr.first == RDF::AJP.id) ? [RDF::AJP[id], tr[1], tr[2]] : tr }
+		@triples.map! do |tr| 
+			tr.map! { |x| (x == RDF::AJP.id) ? RDF::AJP[id] : x }
+		end
 	end
 
 end

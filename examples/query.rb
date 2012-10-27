@@ -4,19 +4,18 @@
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
 
 require 'sparql-client'
-require 'my_prefixes'
 
-# List the first 10 people that work for Oracle Australia and their mobile number
+# List the first 10 people that work for Oracle Australia, and their mobile number
 query = '
 SELECT ?name ?number WHERE {
   ?m a org:Membership ;
-		 org:organization [ rdfs:label "Oracle Australia" ] ;
+		 org:organization [ skos:prefLabel "Oracle Australia" ] ;
 	   org:member ?p .
 	?p foaf:name ?name ;
 	   gldp:card ?c .
-	?c v:tel ?tel .
-	?tel a v:cell ;
-	     rdf:value ?number .
+	?c v:tel ?t .
+	?t a v:cell ;
+	   rdf:value ?number .
 }
 ORDER BY ?name
 LIMIT 10'

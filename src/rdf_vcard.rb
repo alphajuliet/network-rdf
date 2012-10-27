@@ -100,8 +100,7 @@ class RDFVCard
 			company = RDF::AJO[company_id]
 			@triples << [membership, RDF::ORG.organization, company]
 			@triples << [company, RDF.type, RDF::ORG.formalOrganization]
-			@triples << [company, RDF::SKOS.altLabel, @vcard.org.first]
-			@triples << [company, RDF::RDFS.label, @vcard.org.first]	
+			@triples << [company, RDF::SKOS.prefLabel, @vcard.org.first]
 		end		
 	end
 	
