@@ -11,7 +11,7 @@ class VCardEventer
 		
 	def process
 		@vcard.lines.each do |line|
-			self.send("do_" + line.name.downcase.tr('-', '_'), line.value)
+			self.send("do_" + line.name.downcase.tr('-', '_'), line)
 		end
 	end
 

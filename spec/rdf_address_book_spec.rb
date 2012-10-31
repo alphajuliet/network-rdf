@@ -25,18 +25,18 @@ describe RDFAddressBook do
 	
 	it "contains the FOAF name" do
 		query = RDF::Query.new do
-			pattern [:person, RDF::FOAF[:name], :name]
+			pattern [:person, RDF::FOAF.name, :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
-		solutions.first[:person].should eq(RDF::AJP["6D9E0CBF-C599-4BEC-8C01-B1B699914D04"])
+		solutions.first[:person].should eq(RDF::AJP["A5A2D6F7-2DE7-4EC9-ABA1-45F336683FC1"])
 		solutions.first[:name].should eq("Jane Smith")
 	end
 		
 	it "contains a VCard with the fullname" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::V[:VCard]]
-			pattern [:card, RDF::V[:fn], :name]
+			pattern [:card, RDF.type, RDF::V.VCard]
+			pattern [:card, RDF::V.fn, :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
@@ -46,7 +46,7 @@ describe RDFAddressBook do
 	
 	it "contains two phone numbers" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::V[:VCard]]
+			pattern [:card, RDF.type, RDF::V.VCard]
 			pattern [:card, RDF::V[:tel], :tel]
 		end
 		solutions = query.execute(@ab_test1.graph)
@@ -55,9 +55,9 @@ describe RDFAddressBook do
 	
 	it "contains two email addresses" do
 		query = RDF::Query.new do
-			pattern [:card, RDF[:type], RDF::V[:VCard]]
-			pattern [:card, RDF::V[:email], :e]
-			pattern [:e, RDF[:value], :address]
+			pattern [:card, RDF.type, RDF::V.VCard]
+			pattern [:card, RDF::V.email, :e]
+			pattern [:e, RDF.value, :address]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)		
@@ -66,28 +66,45 @@ describe RDFAddressBook do
 	
 	it "contains two social profiles" do
 		query = RDF::Query.new do
-			pattern [:p, RDF[:type], RDF::FOAF[:Person]]
-			pattern [:p, RDF::FOAF[:account], :acct]
-			pattern [:acct, RDF[:type], RDF::FOAF[:OnlineAccount]]
-			pattern [:acct, RDF::FOAF[:accountName], :acctName]
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::FOAF.account, :acct]
+			pattern [:acct, RDF.type, RDF::FOAF[:OnlineAccount]]
+			pattern [:acct, RDF::FOAF.accountName, :acctName]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)		
-		solutions.first[:acctName].should eq("janesmith12345")
+		solutions.first[:acctName].should eq("http://twitter.com/janesmith12345")
 	end
 	
-=begin
-	it "contains a relationship" do
+	it "contains the note information" do
 		query = RDF::Query.new do
-			pattern [:card, RDF::REL.spouse_of, :p]
-			pattern [:p, RDF.type, RDF::FOAF.Person]
-			pattern [:p, RDF::FOAF.name, :name]
+			pattern [:c, RDF.type, RDF::V.VCard]
+			pattern [:c, RDF::V.fn, "Jane Smith"]
+			pattern [:c, RDF::V.note, :note]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(1)
-		solutions.first[:name].should eq("Nick Coster")		
+		solutions.count.should eq(1)		
+		solutions.first[:note].should eq("rdf: { <> ajo:workedAt ajo:oracle-australia . }")
 	end
-=end
+	
+	it "contains triples from an RDF/Turtle note" do
+		query = RDF::Query.new do
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::AJO.workedAt, RDF::AJO['oracle-australia']]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(1)		
+	end
+
+	it "contains a relationship" do
+		query = RDF::Query.new do
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::FOAF.knows, :name]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(2)
+		solutions.first[:name].should eq("John Smith")
+	end
 	
 	it "prints out the RDF" do
 		puts @ab_test1.to_turtle
