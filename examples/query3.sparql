@@ -1,0 +1,9 @@
+SELECT ?name WHERE {
+	?card a v:VCard ;
+				v:fn ?name .
+	OPTIONAL { 
+		?card v:email ?e.
+	}
+	FILTER (!bound(?e))
+}
+

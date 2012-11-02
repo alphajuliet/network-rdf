@@ -43,19 +43,29 @@ namespace :contacts do
 	task :load do
 		require 'rubygems'
 		require 'rest_client'
-		
-		filename = File.join(data_dir, "contacts-#{today}.ttl")
+
+		# Files to load
+		files = ["statements-1.ttl", "contacts-#{today}.ttl"]
 		graph    = 'http://alphajuliet.com/ns/network-rdf'
 		endpoint = 'http://localhost:8000/data/'
 		
-		puts "Loading #{filename} into #{graph} in 4store"
-		response = RestClient.put endpoint + graph, File.read(filename), :content_type => 'text/turtle'
-		puts "Response #{response.code}: #{response.to_str}"	
+		files.each do |fname|
+			filename = File.join(data_dir, fname)
+			puts "Loading #{filename} into #{graph} in 4store"
+			response = RestClient.put endpoint + graph, File.read(filename), :content_type => 'text/turtle'
+			puts "Response #{response.code}: #{response.to_str}"	
+		end
 	end
 
 	desc "Export, transform, and load contact info into the triple store."
 	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load']
 
+	desc "Print out all the prefixes"
+	task :prefixes do
+		require 'my_prefixes'
+		puts RDF.Prefixes(:sparql)
+	end
+	
 end
 
 #----------------
@@ -106,17 +116,25 @@ end
 #----------------
 namespace :examples do
 	
+	require 'sparql_client'
+
 	desc "Run a SPARQL query"
 	task :query do
-		load 'examples/query.rb'
+		SparqlClient.select('examples/query.sparql')
+	end
+	
+	desc "Run a SPARQL query"
+	task :query2 do
+		SparqlClient.construct('examples/query2.sparql')
 	end
 	
 	desc "Run another SPARQL query"
 	task :query3 do
-		load 'examples/query3.rb'
+		SparqlClient.select('examples/query3.sparql')
 	end
 	
 end
 
+#----------------
 
 # The End
