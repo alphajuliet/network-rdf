@@ -21,7 +21,7 @@ class RDFVCard < VCardEventer
 
 	#------------------------
 	def add_person
-		@subject = RDF::AJP.id
+		@subject = RDF::AJC.id
 		@card = RDF::Node.new
 		@triples << [@subject, RDF.type, RDF::FOAF.Person]
 		@triples << [@subject, RDF::GLDP.card, @card]
@@ -73,17 +73,17 @@ class RDFVCard < VCardEventer
 	def do_org(e)
 		org = e.value
 		unless org.nil?
-			@membership = RDF::AJO["m" << rand(1000000).to_s.ljust(6, "0")]
+			@membership = RDF::AJC["m" << rand(1000000).to_s.ljust(6, "0")]
 			@triples << [@membership, RDF.type, RDF::ORG.Membership]
 			
 			# Add the target
 			@triples << [@membership, RDF::ORG.member, @subject]
 			
 			# Add the organisation
-			company_id = org.first.downcase.tr('\.&+ ', ' -')
-			company = RDF::AJO[company_id]
+			company_id = "org-" + org.first.downcase.tr('\.&+ ', ' -')
+			company = RDF::AJC[company_id]
 			@triples << [@membership, RDF::ORG.organization, company]
-			@triples << [company, RDF.type, RDF::ORG.formalOrganization]
+			@triples << [company, RDF.type, RDF::ORG.Organization]
 			@triples << [company, RDF::SKOS.prefLabel, org.first]
 		end		
 	end
@@ -97,24 +97,23 @@ class RDFVCard < VCardEventer
 	end
 			
 	def do_x_abuid(e)
-		id = e.value.first.split(':').first
+		id = "person-" + e.value.first.split(':').first
 		@triples.map! do |tr|
-			tr.map! { |x| (x == RDF::AJP.id) ? RDF::AJP[id] : x } unless tr.nil?
+			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[id] : x } unless tr.nil?
 		end
 	end
 	
 	def do_note(e)
-		@triples << [@card, RDF::V.note, e.value]
-		if (e.value =~ /rdf:\s*\{(.*)\}/)
+		@triples << [@card, RDF::V.note, e.value.to_s]
+		if (e.value =~ /rdf:\s*\{(.+)\}/m)
 			rdf = $1
 			# Expand prefixes into their URIs
-			rdf.gsub!(/(\w+):([^\s]*)/) { |p| "<" + RDF::Vocabulary.expand($1) + $2 + ">"}
+			rdf.gsub!(/(\w+):(\S*)/) { |p| '<' + RDF::Vocabulary.expand($1) + $2 + '>'}
 			# Map <> into the subject
 			rdf.gsub!('<>', "<#{@subject}>")
 			# Parse the RDF as Turtle statements
-			parse_turtle(rdf)
 			# Add as triples			
-			#@triples << [@card, RDF::V.note, rdf]
+			parse_turtle(rdf)
 		end
 	end
 

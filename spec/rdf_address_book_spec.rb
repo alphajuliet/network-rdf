@@ -29,7 +29,7 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
-		solutions.first[:person].should eq(RDF::AJP["A5A2D6F7-2DE7-4EC9-ABA1-45F336683FC1"])
+		solutions.first[:person].should eq(RDF::AJC["person-A5A2D6F7-2DE7-4EC9-ABA1-45F336683FC1"])
 		solutions.first[:name].should eq("Jane Smith")
 	end
 		
@@ -84,13 +84,13 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)		
-		solutions.first[:note].should eq("rdf: { <> ajo:workedAt ajo:oracle-australia . }")
 	end
 	
 	it "contains triples from an RDF/Turtle note" do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
-			pattern [:p, RDF::AJO.workedAt, RDF::AJO['oracle-australia']]
+			pattern [:p, RDF::NET.workedAt, :c]
+			pattern [:c, RDF::SKOS.prefName, "Oracle Australia"]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)		
@@ -104,6 +104,19 @@ describe RDFAddressBook do
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)
 		solutions.first[:name].should eq("John Smith")
+	end
+	
+	it "maps a person to an organisation" do
+		query = RDF::Query.new do
+			pattern [:m, RDF.type, RDF::ORG.Membership]
+			pattern [:m, RDF::ORG.member, :p]
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:m, RDF::ORG.organization, :org]
+			pattern [:org, RDF.type, RDF::ORG.Organization]
+			pattern [:org, RDF::SKOS.prefLabel, "Example Corporation"]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(1)		
 	end
 	
 	it "prints out the RDF" do

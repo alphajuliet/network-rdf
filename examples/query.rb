@@ -3,7 +3,7 @@
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
 
-require 'sparql-client'
+require 'sparql_client'
 
 # List the first 10 people that work for Oracle Australia, and their mobile number
 query = '

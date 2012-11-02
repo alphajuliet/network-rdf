@@ -3,30 +3,80 @@
 
 require 'rubygems'
 require 'rdf'
-module RDF
-	AJP 	= RDF::Vocabulary.new("http://alphajuliet.com/ns/person#")
-	AJO 	= RDF::Vocabulary.new("http://alphajuliet.com/ns/org#")
-	ORG 	= RDF::Vocabulary.new("http://www.w3.org/ns/org#")
-	GLDP 	= RDF::Vocabulary.new("http://www.w3.org/ns/people#")
-	V 		= RDF::Vocabulary.new("http://www.w3.org/2006/vcard/ns#")
-	REL 	= RDF::Vocabulary.new("http://purl.org/vocab/relationship")
-	DBR 	= RDF::Vocabulary.new("http://dbpedia.org/resource/")
-	DBP 	= RDF::Vocabulary.new("http://dbpedia.org/property/")
-	DBO 	= RDF::Vocabulary.new("http://dbpedia.org/ontology/")
 
-end
-
+# Extend the namespace
 module RDF
+	
+	PREFIX = {
+		:rdf 		=> "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+		:rdfs 	=> "http://www.w3.org/2000/01/rdf-schema#",
+		:owl 		=> "http://www.w3.org/2002/07/owl#",
+		:xsd 		=> "http://www.w3.org/2001/XMLSchema#",
+		
+		:foaf 	=> "http://xmlns.com/foaf/0.1/",
+		:org		=> "http://www.w3.org/ns/org#",
+		:gldp		=> "http://www.w3.org/ns/people#",
+		:v			=> "http://www.w3.org/2006/vcard/ns#",
+		:db 		=> "http://dbpedia.org/resource/",
+		:dbp 		=> "http://dbpedia.org/property/",
+		:dbo 		=> "http://dbpedia.org/ontology/",
+		:skos 	=> "http://www.w3.org/2004/02/skos/core#",
+		:rel		=> "http://purl.org/vocab/relationship",
+		
+		:net 		=> "http://alphajuliet.com/ns/ont/network#",
+		:ajc 		=> "http://alphajuliet.com/ns/contact#",
+		:ajp 		=> "http://alphajuliet.com/ns/people#",
+		nil			=> "http://alphajuliet.com/ns/contact#"
+	}
+
+	#------------------------
+	# Shortcut creation method
+	def RDF.CreateVocab(prefix)
+		RDF::Vocabulary.new(RDF::PREFIX[prefix])
+	end
+	
+	AJP		= RDF.CreateVocab(:ajp)
+	AJC 	= RDF.CreateVocab(:ajc)
+	NET		= RDF.CreateVocab(:net)
+	ORG		= RDF.CreateVocab(:org)
+	GLDP	= RDF.CreateVocab(:gldp)
+	V			= RDF.CreateVocab(:v)
+
+	# Save for later
+	#DB		= RDF.CreateVocab(:db)
+	#DBP		= RDF.CreateVocab(:dbp)
+	#DBO		= RDF.CreateVocab(:dbo)
+	#REL		= RDF.CreateVocab(:rel)
+	
+	#------------------------
+	# Serialise the prefixes
+	def RDF.Prefixes(format=:turtle)
+		buffer = []
+		RDF::PREFIX.each do |prefix, uri|
+			case format
+				when :sparql
+					buffer << "PREFIX #{prefix.to_s}: <#{uri}>"
+				when :turtle
+					buffer << "@prefix #{prefix.to_s}: <#{uri}> ."
+				else
+					buffer << "#{prefix.to_s} #{uri}\n"
+			end
+		end
+		buffer.join("\n")
+	end
+	
+	#------------------------
+	# Extend the class
 	class Vocabulary
 		def self.expand(prefix)
 			begin
-				eval "RDF::#{prefix.upcase}.to_s"
+				RDF::PREFIX[prefix.to_sym]
 			rescue
 				prefix + ":"
 			end
 		end
 	end
-end
 
+end
 
 # The End

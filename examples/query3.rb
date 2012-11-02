@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
-require 'sparql-client'
+require 'sparql_client'
 require 'my_prefixes'
 
 # List people that don't have an email address

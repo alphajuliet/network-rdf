@@ -3,6 +3,7 @@
 <xsl:stylesheet version="1.0" 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:s="http://www.w3.org/2005/sparql-results#">
+	
 	<xsl:output	method="html" indent="yes"/>
 	
 	<xsl:template match="s:sparql">
@@ -45,7 +46,7 @@
 		</td>
 	</xsl:template>
 	
-	<!-- don't pass text through -->
+	<!-- don't pass any other text through -->
 	<xsl:template match="text()|@*">
 	</xsl:template>
 	

@@ -6,6 +6,7 @@ require 'vpim/vcard'
 require 'rdf'
 require 'rdf/turtle'
 require 'rdf_vcard_new'
+require 'my_prefixes'
 
 class RDFAddressBook
 
@@ -44,7 +45,7 @@ class RDFAddressBook
 	#------------------------
 	def write_as_turtle(filename)
 		raise "Empty graph" if @graph.nil?
-		RDF::Turtle::Writer.open(filename) do |writer|
+		RDF::Turtle::Writer.open(filename, :prefixes => RDF::PREFIX) do |writer|
 			writer << @graph
 		end
 	end
