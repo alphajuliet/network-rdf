@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'rdf'
 require 'my_prefixes'
 require 'pp'

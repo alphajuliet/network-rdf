@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
-require 'rdf_linked_in'
+require 'linkedin/rdf_linked_in'
 
 describe RDFLinkedIn do
 	

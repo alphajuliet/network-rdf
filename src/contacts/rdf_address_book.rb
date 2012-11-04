@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
 # RDF my address book
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'rubygems'
 require 'vpim/vcard'
 require 'rdf'
 require 'rdf/turtle'
-require 'rdf_vcard_new'
+require 'contacts/rdf_vcard_new'
 require 'my_prefixes'
 
 class RDFAddressBook
@@ -39,7 +40,7 @@ class RDFAddressBook
 	#------------------------
 	def to_turtle
 		raise "Empty graph" if @graph.nil?
-		@graph.dump(:turtle)
+		@graph.dump(:turtle, :prefixes => RDF::PREFIX)
 	end
 	
 	#------------------------

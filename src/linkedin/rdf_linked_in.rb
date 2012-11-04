@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'rubygems'
 require 'rdf'
 require 'rdf/turtle'
 require 'rdf/json'
-require 'my_linked_in'
+require 'linkedin/my_linked_in'
 require 'my_prefixes'
-require 'pp'
 
 class RDFLinkedIn
 	

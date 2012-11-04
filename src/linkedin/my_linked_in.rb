@@ -2,8 +2,8 @@
 # LinkedIn information
 
 require 'rubygems'
-require 'linkedin'
-require 'authorise'
+#require 'linkedin'
+require 'linkedin/authorise'
 
 # Useful function to turn string keys into symbols in a hash
 def symbolize(obj)
@@ -23,7 +23,7 @@ class MyLinkedIn
 		auth.authorise
 		@client = auth.client
 		
-		@@cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "cache"))
+		@@cache_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "cache"))
 		@@max_age = 604800 # Cache for 7 days (in seconds)
 	end
 

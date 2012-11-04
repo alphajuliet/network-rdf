@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
-require 'my_linked_in'
-require 'pp'
+require 'linkedin/my_linked_in'
 
 describe MyLinkedIn do
 	

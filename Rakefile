@@ -11,6 +11,7 @@ today = t.strftime("%Y-%m-%d")
 # Directories
 here = File.dirname(__FILE__)
 data_dir = File.expand_path(File.join(here, "data"))
+ex_dir = File.expand_path(File.join(here, "examples"))
 
 RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
@@ -26,14 +27,14 @@ namespace :contacts do
 
 	desc "Export all my contacts."
 	task :export do
-		sh "osascript src/export-all-contacts.scpt"
+		sh "osascript src/contacts/export-all-contacts.scpt"
 		source_dir = File.join(ENV["HOME"], "Downloads")
 		FileUtils.mv(File.join(source_dir, "contacts.vcf"), File.join(data_dir, "contacts-#{today}.vcf"))
 	end
 	
 	desc "Generate RDF/Turtle from the contacts VCard file."
 	task :turtle do
-		require 'rdf_address_book'	
+		require 'contacts/rdf_address_book'	
 		ab = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-#{today}.vcf"))
 		ab.convert_to_rdf
 		ab.write_as_turtle(File.join(data_dir, "contacts-#{today}.ttl"))
@@ -73,21 +74,21 @@ namespace :linkedin do
 	
 	desc "Get an updated access token from LinkedIn"
 	task :get_token do
-		require 'authorise'
+		require 'linkedin/authorise'
 		auth = LinkedInAuthoriser.new
 		auth.get_access_token
 	end
 	
 	desc "Test the LinkedIn access token"
 	task :test do
-		require 'authorise'
+		require 'linkedin/authorise'
 		auth = LinkedInAuthoriser.new
 		auth.test_access_token
 	end
 	
 	desc "Transform my LinkedIn connectsion to RDF"
 	task :turtle do
-		require 'rdf_linked_in'
+		require 'linkedin/rdf_linked_in'
 		n = RDFLinkedIn.new
 		n.add_subject
 		n.add_connections
@@ -114,27 +115,21 @@ namespace :rdfstore do
 end
 
 #----------------
-namespace :examples do
-	
+desc "Run a SPARQL select query"
+task :select, :query do |t, args|
 	require 'sparql_client'
-
-	desc "Run a SPARQL query"
-	task :query do
-		SparqlClient.select('examples/query.sparql')
-	end
-	
-	desc "Run a SPARQL query"
-	task :query2 do
-		SparqlClient.construct('examples/query2.sparql')
-	end
-	
-	desc "Run another SPARQL query"
-	task :query3 do
-		SparqlClient.select('examples/query3.sparql')
-	end
-	
+	src = File.join(ex_dir, args[:query] + ".sparql")
+	puts "Run examples/#{src}"
+	SparqlClient.select(src)
 end
 
-#----------------
+desc "Run a SPARQL construct query"
+task :construct, :query do |t, args|
+	require 'sparql_client'
+	src = File.join(ex_dir, args[:query] + ".sparql")
+	puts "Run examples/#{src}"
+	SparqlClient.construct(src)
+end
+
 
 # The End

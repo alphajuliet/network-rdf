@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'rdf'
 require 'rdf/turtle'
 require 'my_prefixes'
-require 'vcard_eventer'
+require 'contacts/vcard_eventer'
 
 class RDFVCard < VCardEventer
 
@@ -31,7 +32,7 @@ class RDFVCard < VCardEventer
 	#------------------------
 	def do_n(e)
 		@triples << [@subject, RDF::FOAF.name, e.value.fullname]
-		@triples << [@subject, RDF::SKOS.prefName, e.value.fullname]
+		@triples << [@subject, RDF::SKOS.prefLabel, e.value.fullname]
 		@triples << [@card, RDF::V.fn, e.value.fullname]		
 	end
 		
