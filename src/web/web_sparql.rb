@@ -27,7 +27,21 @@ get '/people_at/:orgname' do
 	client = SPARQL::Client.new('http://localhost:8000/sparql/')
 	response = client.query(RDF.Prefixes(:sparql) + query)
 	markaby :query1, :locals => { :response => response }
-	
+end
+
+get '/no-email' do
+	query = "
+	SELECT ?name WHERE {
+		?card a v:VCard ;
+					v:fn ?name .
+		OPTIONAL { 
+			?card v:email ?e.
+		}
+		FILTER (!bound(?e))
+	}"
+	client = SPARQL::Client.new('http://localhost:8000/sparql/')
+	response = client.query(RDF.Prefixes(:sparql) + query)
+	markaby :query1, :locals => { :response => response }	
 end
 
 # The End
