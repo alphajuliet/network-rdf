@@ -1,0 +1,11 @@
+# The first 10 people and their company
+SELECT ?name ?org ?orgName WHERE {
+	?m a org:Membership .
+	?m org:member ?p .
+	?p foaf:name ?name .
+	?m org:organization ?org .
+	?org skos:prefLabel ?orgName .
+	FILTER (?name != ?orgName) .
+}
+ORDER BY ?orgName
+LIMIT 10

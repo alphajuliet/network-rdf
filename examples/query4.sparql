@@ -1,0 +1,10 @@
+# Provide a simple description of who works where
+
+CONSTRUCT {
+	?p net:worksFor ?org .
+} WHERE {
+	?m a org:Membership .
+	?m org:organization ?org .
+	?m org:member ?p .
+}
+LIMIT 10

@@ -12,6 +12,7 @@ today = t.strftime("%Y-%m-%d")
 here = File.dirname(__FILE__)
 data_dir = File.expand_path(File.join(here, "data"))
 ex_dir = File.expand_path(File.join(here, "examples"))
+web_dir = File.expand_path(File.join(here, "src", "web"))
 
 RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
@@ -115,12 +116,23 @@ namespace :rdfstore do
 end
 
 #----------------
+namespace :web do
+	
+	desc "Start the web UI"
+	task :start do
+		cmd = "ruby -rubygems " + File.join(web_dir, "web_sparql.rb")
+		sh cmd
+	end
+	
+end
+
+#----------------
 desc "Run a SPARQL select query"
 task :select, :query do |t, args|
 	require 'sparql_client'
 	src = File.join(ex_dir, args[:query] + ".sparql")
 	puts "Run examples/#{src}"
-	SparqlClient.select(src)
+	puts SparqlClient.select(src)
 end
 
 desc "Run a SPARQL construct query"

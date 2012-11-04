@@ -1,0 +1,14 @@
+# Find the name and phone number of the first 10 people who work at Oracle Australia
+SELECT ?name ?number WHERE {
+  ?m a org:Membership ;
+		 org:organization [ skos:prefLabel "Oracle Australia" ] ;
+	   org:member ?p .
+	?p foaf:name ?name ;
+	   gldp:card ?c .
+	?c v:tel ?t .
+	?t a v:cell ;
+	   rdf:value ?number .
+}
+ORDER BY ?name
+LIMIT 10
+

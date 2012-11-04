@@ -1,0 +1,28 @@
+# Query response template
+html do
+	head do
+		title "SPARQL query"
+		# script :type => "text/javascript", :src => "/script/less-1.3.1.min.js"
+		link :rel => "stylesheet", :href => "/css/query.css"
+	end
+	body do
+		img :src => "/image/sparql.jpg", :height => "75px"
+		h1 "network-rdf query"
+		p { "Found #{response.count} solutions."}
+		table do
+			tbody do
+				tr do 
+					response.variable_names.each do |name|
+						th name.to_s.capitalize
+					end
+				end
+				response.each_solution do |solution|
+					tr do
+						solution.each_binding { |name, value| td value.to_s }
+					end
+				end
+			end
+		end
+	end
+end
+
