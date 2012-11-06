@@ -119,6 +119,17 @@ describe RDFAddressBook do
 		solutions.count.should eq(1)		
 	end
 	
+	it "contains a role" do
+		query = RDF::Query.new do
+			pattern [:m, RDF.type, RDF::ORG.Membership]
+			pattern [:m, RDF::ORG.role, :r]
+			pattern [:r, RDF.type, RDF::ORG.Role]
+			pattern [:r, RDF::SKOS.prefLabel, :title]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.first[:title].should eq("CTO")
+	end
+	
 	it "prints out the RDF" do
 		puts @ab_test1.to_turtle
 	end

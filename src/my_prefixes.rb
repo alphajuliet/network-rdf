@@ -72,7 +72,7 @@ module RDF
 			begin
 				RDF::PREFIX[prefix.to_sym]
 			rescue
-				prefix + ":"
+				raise ArgumentError, "#{prefix} not recognised."
 			end
 		end
 	end

@@ -1,3 +1,4 @@
 # Ignore the cache and data folders
 cache
 data
+examples

@@ -31,9 +31,10 @@ class RDFVCard < VCardEventer
 	
 	#------------------------
 	def do_n(e)
-		@triples << [@subject, RDF::FOAF.name, e.value.fullname]
-		@triples << [@subject, RDF::SKOS.prefLabel, e.value.fullname]
-		@triples << [@card, RDF::V.fn, e.value.fullname]		
+		name = e.value.fullname
+		@triples << [@subject, RDF::FOAF.name, name]
+		@triples << [@subject, RDF::SKOS.prefLabel, name]
+		@triples << [@card, RDF::V.fn, name]	
 	end
 		
 	def do_email(e)
@@ -63,12 +64,11 @@ class RDFVCard < VCardEventer
 	end
 
 	def do_title(e)
-		t = e.value
-		unless title.nil?
-			role = RDF::Node.new
-			@triples << [@membership, RDF::ORG.role, role]
-			@triples << [role, RDF::RDFS.label, title]
-		end
+		title = e.value
+		role = RDF::Node.new
+		@triples << [@membership, RDF::ORG.role, role]
+		@triples << [role, RDF.type, RDF::ORG.Role]
+		@triples << [role, RDF::SKOS.prefLabel, title]
 	end
 				
 	def do_org(e)
@@ -88,7 +88,7 @@ class RDFVCard < VCardEventer
 			@triples << [company, RDF::SKOS.prefLabel, org.first]
 		end		
 	end
-
+	
 	def do_x_socialprofile(e)
 		p = e.value
 		acct = RDF::Node.new
