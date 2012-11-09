@@ -1,0 +1,28 @@
+/* Stylesheet for queries */
+
+body { 
+	margin: 10pt 10pt;
+	font-family: Helvetica, Arial, sans-serif; 
+	font-size: 9pt;
+}
+
+h1 { color: red; }
+table { font-size: 9pt; }
+th { border-bottom: 1px solid black; }
+td {
+	border-bottom: 1px solid #666;
+	padding: 1pt 5pt;
+}
+
+div#header {
+	float:left;
+	margin: 10pt 20pt 0 5pt;
+	width: 100pt;
+	-moz-box-shadow: 3px 3px 3px #ccc;
+	-webkit-box-shadow: 3px 3px 3px #ccc;
+	box-shadow: 3px 3px 3px #ccc;		
+	padding: 10pt 10pt;
+	border-width: 1px;
+	border-color: #ccc;
+	border-style: solid;
+}

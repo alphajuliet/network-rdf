@@ -119,7 +119,19 @@ class RDFVCard < VCardEventer
 	end
 
 	def do_x_abrelatednames(e)
-		@triples << [@subject, RDF::FOAF.knows, e.value]
+		person = lookup_person(e.value) || RDF::Node.new
+		@triples << [person, RDF::FOAF.name, e.value]
+		@triples << [person, RDF.type, RDF::FOAF.Person]
+		@triples << [@subject, RDF::FOAF.knows, person]
+	end
+	
+	def lookup_person(name)
+		return nil
+		
+		# Keep this for later
+		matches = @triples.select { |tr| (tr[1] == RDF::FOAF.name) && (tr[2].to_s == name) }
+		return nil if matches.size == 0
+		matches.first[0]
 	end
 	
 	def do_x_ablabel(e)
