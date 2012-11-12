@@ -2,19 +2,23 @@
 html do
 	head do
 		title "SPARQL query"
-		# script :type => "text/javascript", :src => "/script/less-1.3.1.min.js"
-		link :rel => "stylesheet", :href => "/css/network.css"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
+		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
 	end
 	body do
-		div :id => "header" do 
+		div.header! do 
 			img :src => "/image/sparql.jpg", :height => "75px"
 			h1 "network-rdf"
 		end
-		h2 "Queries"
-		p { a "All people and company", :href => "/people/all" }
-		p { a "No email address", :href => "/no-email" }
-		p { a "Person details", :href => "/person/Andrew%20Joyner"}
-		p { a "People who work at a company", :href => "/people/at/Unico" }
-		p { a "Matches on the basis of their name", :href => "/foaf-match" }
+		div.main! do
+			h1 "Query"
+			p { a "All people and their organisation", :href => "/people/all" }
+			p { a "Person details", :href => "/person/Andrew%20Joyner"}
+			p { a "People who work at a company", :href => "/people/at/Unico" }
+			p { a "Entries with no email address", :href => "/no-email" }
+			p { a "Organisations by people count", :href => "/org/count_by_person" }
+			h1 "Visualise"
+			p { a "Simple data", :href => "/viz" }
+		end
 	end
 end

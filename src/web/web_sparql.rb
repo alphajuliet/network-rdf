@@ -7,7 +7,7 @@ require 'sparql_client'
 require 'my_prefixes'
 require 'json'
 
-
+# Convert a solution to JSON format
 def to_json(query_result)
 	array = []
 	query_result.each_solution do |solution|
@@ -18,12 +18,14 @@ def to_json(query_result)
 	JSON.pretty_generate(array)
 end	
 
-def go(query)
+# Do the SPARQL query and render on the given template, or return as JSON
+def query(template=:query1, &block)
 	client = SPARQL::Client.new('http://localhost:8000/sparql/')
+	query = yield
 	result = client.query(RDF.Prefixes(:sparql) + query)
 	if request.accept.include?('text/html')
-		markaby :query1, :locals => { :result => result } 
-	elsif request.accept.include?('text/json')
+		markaby template, :locals => { :result => result } 
+	elsif request.accept.include?('application/json')
 		to_json(result)
 	end		
 end
@@ -33,64 +35,73 @@ get '/' do
 end
 
 get '/people/all' do
-	query = "
-	SELECT ?name ?orgname
-	WHERE {
-		?m a org:Membership .
-		?m org:member [ foaf:name ?name ] .
-		?m org:organization [ skos:prefLabel ?orgname ] .
-	}
-	ORDER BY ?orgname"
-	go(query)
+	query do
+		"SELECT ?name ?orgname
+		WHERE {
+			?m a org:Membership .
+			?m org:member [ foaf:name ?name ] .
+			?m org:organization [ skos:prefLabel ?orgname ] .
+		}
+		ORDER BY ?orgname"
+	end
 end
 
 get '/people/at/:orgname' do
-	query = "
-	SELECT ?name 
-	WHERE {
+	query do 
+		"SELECT ?name 
+		WHERE {
 		?m a org:Membership .
 		?m org:organization ?org .
 		?org skos:prefLabel \'#{params[:orgname]}\' .
 		?m org:member ?p .
 		?p foaf:name ?name .
-	} 
-	ORDER by ?name"
-	go(query)
+		} 
+		ORDER by ?name"
+	end
 end
 
 get '/person/:name' do
-	query = "
-	SELECT ?predicate ?object
-	WHERE {
-		?p foaf:name \'#{params[:name]}\' .
-		?p ?predicate ?object .
-	}"
-	go(query)		
+	query do
+		"SELECT ?predicate ?object
+		WHERE {
+			?p foaf:name \'#{params[:name]}\' .
+			?p ?predicate ?object .
+		}"
+	end
+end
+
+get '/org/count_by_person' do
+	min = params["min"] || 0;
+	query do
+		"SELECT ?orgname (COUNT (?p) AS ?members)
+		WHERE {
+			?m a org:Membership .
+			?m org:organization ?org .
+			?org skos:prefLabel ?orgname .
+			?m org:member ?p .
+		}
+		GROUP BY ?orgname
+		HAVING (COUNT (?p) >= #{min})
+		ORDER BY DESC(?members)"
+	end
 end
 
 get '/no-email' do
-	query = "
-	SELECT ?name 
-	WHERE {
-		?card a v:VCard ;
-					v:fn ?name .
-		OPTIONAL { 
-			?card v:email ?e.
-		}
-		FILTER (!bound(?e))
-	}"
-	go(query)	
+	query do
+		"SELECT ?name 
+		WHERE {
+			?card a v:VCard ;
+						v:fn ?name .
+			OPTIONAL { 
+				?card v:email ?e.
+			}
+			FILTER (!bound(?e))
+		}"
+	end
 end
 
-get '/foaf-match' do
-	query = "
-	SELECT ?name ?x ?y
-	WHERE {
-		?x foaf:name ?name .
-		?y foaf:name ?name .
-		FILTER (?x < ?y) .
-	}"
-	go(query)
+get '/viz' do
+	markaby :viz 
 end
 
 # The End

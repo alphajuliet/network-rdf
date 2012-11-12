@@ -6,7 +6,7 @@ body {
 	font-size: 9pt;
 }
 
-h1 { color: red; }
+#header h1 { color: red; }
 table { font-size: 9pt; }
 th { border-bottom: 1px solid black; }
 td {
