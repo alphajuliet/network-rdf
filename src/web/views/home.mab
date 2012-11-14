@@ -13,6 +13,7 @@ html do
 		div.main! do
 			h1 "Query"
 			p { a "All people and their organisation", :href => "/people/all" }
+			p { a "People with duplicate nodes", :href => '/people/duplicates'}
 			p { a "Person details", :href => "/person/Andrew%20Joyner"}
 			p { a "People who work at a company", :href => "/people/at/Unico" }
 			p { a "Entries with no email address", :href => "/no-email" }
