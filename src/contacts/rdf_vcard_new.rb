@@ -27,6 +27,7 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF.type, RDF::FOAF.Person]
 		@triples << [@subject, RDF::GLDP.card, @card]
 		@triples << [@card, RDF.type, RDF::V.VCard]
+		@triples << [RDF::AJP.AndrewJ, RDF::FOAF.knows, @subject]
 	end
 	
 	#------------------------

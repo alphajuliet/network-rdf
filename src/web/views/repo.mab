@@ -1,0 +1,20 @@
+# Show repository metadata
+html do
+	head do
+		title "Repository"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
+		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
+	end
+	body do
+		div.header! do
+			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+			span { a "network-rdf", :href => "/" }
+		end
+		div.main! do
+			h1 "Repository metadata"
+			@data.each do |key, value|
+				p "#{key}: #{value}"
+			end
+		end
+	end
+end

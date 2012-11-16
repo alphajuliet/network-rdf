@@ -1,20 +1,20 @@
 # Query result template
 html do
 	head do
-		title "SPARQL query"
+		title "network-rdf: query"
 		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
 		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
 	end
 	body do
 		div.header! do 
-			img :src => "/image/sparql.jpg", :height => "75px"
-			h1 { a "network-rdf", :href => "/" }
+			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+			span { a "network-rdf", :href => "/" }
 		end
 		div.main! do
 			p { "Found #{result.count} solutions."}
 			table do
 				tbody do
-					tr do 
+					tr do
 						result.variable_names.each do |name|
 							th name.to_s.capitalize
 						end

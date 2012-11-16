@@ -1,11 +1,12 @@
 /* Stylesheet for queries */
 
-
 .shadow (@d: 3px) {
 	-moz-box-shadow: @d @d @d #ccc;
 	-webkit-box-shadow: @d @d @d #ccc;
 	box-shadow: @d @d @d #ccc;
 }
+
+@margin: 130px;
 
 body { 
 	font-family: Helvetica, Arial, sans-serif;
@@ -14,6 +15,8 @@ body {
 	padding: 0;
 	height: 100%; 
 	max-height: 100%; 	
+	max-width: 480px;	
+	h1 { font-size: 150%; }
 }
 
 div#header {
@@ -22,11 +25,13 @@ div#header {
 	top: 0;
 	left: 0;
 	height: 100%;
-	width: 180px;
+	width: @margin;
 	padding: 10pt 10pt;
-	h1 { 
-		font-family: American Typewriter; 
-		font-weight: normal;
+	span { 
+		display: block;
+		font-family: American Typewriter;
+		font-size: 12pt;
+		margin-top: 10pt;
 		color: @heading-colour;
 		a {
 			text-decoration: none;
@@ -34,15 +39,16 @@ div#header {
 		}
 	}
 	img { 
+		height: 50px;
 		padding: 5px;
-		.shadow(3px); 
+		.shadow(3px);
 	}
 }
 
 div#main {
 	position: absolute;
 	top: 0;
-	left: 180px;
+	left: @margin;
 	margin: 10pt 0pt;
 	overflow: auto;
 }
@@ -55,3 +61,11 @@ table { font-size: 9pt;
 	}
 }
 
+input[type="text"] {
+	border: 1px solid #999;
+}
+
+input[type="button"] {
+	border: 1px solid #999;	
+	background-color: #eee;
+}

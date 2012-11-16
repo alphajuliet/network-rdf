@@ -1,25 +1,42 @@
 # Query response template
 html do
 	head do
-		title "SPARQL query"
+		title "network-rdf: home"
 		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
 		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
+		script :type => "text/javascript", :src => "/script/jquery-1.8.2.min.js" do end
+		script :type => "text/javascript", :src => "/script/network-rdf.js" do end
 	end
 	body do
 		div.header! do 
-			img :src => "/image/sparql.jpg", :height => "75px"
-			h1 "network-rdf"
+			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+			span "network-rdf"
 		end
 		div.main! do
 			h1 "Query"
 			p { a "All people and their organisation", :href => "/people/all" }
-			p { a "People with duplicate nodes", :href => '/people/duplicates'}
-			p { a "Person details", :href => "/person/Andrew%20Joyner"}
-			p { a "People who work at a company", :href => "/people/at/Unico" }
-			p { a "Entries with no email address", :href => "/no-email" }
+			p { a "Contacts with no email address", :href => "/no-email" }
 			p { a "Organisations by people count", :href => "/org/count_by_person" }
+			p do
+				span "Person details: "
+				input :type => "text", :name => "person1", :value => "Andrew Joyner"
+				input :type => "button", :id => "cmd_person_value", :value => "Go"
+			end
+			p do
+				span "Who knows: "
+				input :type => "text", :name => "person2", :value => "Trish Mitchell"
+				input :type => "button", :id => "cmd_person_knows", :value => "Go"
+			end
+			#p { a "People who work at a company", :href => "/people/at/Unico" }
+			p do
+				span "People at company: "
+				input :type => "text", :name => "org1", :value => "Unico"
+				input :type => "button", :id => "cmd_people_at", :value => "Go"
+			end			
 			h1 "Visualise"
 			p { a "Simple data", :href => "/viz" }
+			h1 "Admin"
+			p { a "Repository metadata", :href => "/repo" }
 		end
 	end
 end

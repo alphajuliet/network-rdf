@@ -1,7 +1,7 @@
 # Visualise results
 html do
 	head do
-		title "Visualise"
+		title "network-rdf: visualise"
 		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
 		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/viz.less"
 		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
@@ -9,8 +9,8 @@ html do
 	end
 	body do
 		div.header! do
-			img :src => "/image/sparql.jpg", :height => "75px", :alt => "SPARQL logo"
-			h1 "network-rdf"
+			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+			span { a "network-rdf", :href => "/" }
 		end
 		div.main! do
 			h1 "Contacts in each organisation"

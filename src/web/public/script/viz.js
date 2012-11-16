@@ -16,7 +16,7 @@ function renderExampleOn(svg) {
 function renderCompanyDataOn(svg) {
 	var bar_height = 12, bar_spacing = 3;
 	var indent = 200;
-	d3.json("http://localhost:4567/org/count_by_person?min=2", function (result) {
+	d3.json("/org/count_by_person?min=2", function (result) {
 		console.log("Got " + result.length + " items.");
 		svg.selectAll("rect")
 			.data(result)
