@@ -160,7 +160,7 @@ end
 namespace :web do
 	desc "Start the web UI"
 	task :start do
-		cmd = "ruby -rubygems " + File.join(web_dir, "home.rb")
+		cmd = "ruby -rubygems " + File.join(web_dir, "home.rb") + " -p $PORT"
 		sh cmd
 	end
 end
