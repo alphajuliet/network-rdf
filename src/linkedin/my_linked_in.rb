@@ -7,9 +7,9 @@ require 'linkedin/authorise'
 
 # Useful function to turn string keys into symbols in a hash
 def symbolize(obj)
-    return obj.inject({}){|memo,(k,v)| memo[k.to_sym] =  symbolize(v); memo} if obj.is_a? Hash
-    return obj.inject([]){|memo,v    | memo           << symbolize(v); memo} if obj.is_a? Array
-    return obj
+	return obj.inject({}){|memo,(k,v)| memo[k.to_sym] =  symbolize(v); memo} if obj.is_a? Hash
+	return obj.inject([]){|memo,v    | memo           << symbolize(v); memo} if obj.is_a? Array
+	return obj
 end
 
 # An interface to the LinkedIn API 

@@ -99,7 +99,7 @@ class RDFVCard < VCardEventer
 	end
 			
 	def do_x_abuid(e)
-		id = "person-" + e.value.first.split(':').first
+		id = "person-" + e.value.split(':').first
 		@triples.map! do |tr|
 			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[id] : x } unless tr.nil?
 		end

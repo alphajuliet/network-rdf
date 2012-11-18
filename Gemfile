@@ -6,10 +6,11 @@ source "http://rubygems.org/"
 gem "rake", "0.9.2.2"
 gem "rspec", "2.11.0"
 
+# RDF and data
 gem "rdf", "0.3.8"
 gem "rdf-turtle", "0.1.2"
 gem "rdf-json", "0.3.0"
-gem "vpim", "0.695"
+gem "vcard"
 gem "linkedin", "0.3.7"
 
 # SPARQL

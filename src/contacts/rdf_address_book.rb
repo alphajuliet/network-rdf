@@ -3,7 +3,7 @@
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'rubygems'
-require 'vpim/vcard'
+require 'vcard'
 require 'rdf'
 require 'rdf/turtle'
 require 'contacts/rdf_vcard_new'

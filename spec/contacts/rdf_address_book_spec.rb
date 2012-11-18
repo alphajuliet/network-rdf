@@ -1,10 +1,13 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.join(File.dirname(__FILE__), "..", "src")
+$:.unshift File.join(File.dirname(__FILE__), "..", "..", "src")
+data_dir = File.expand_path(
+						File.join(
+							File.dirname(__FILE__), 
+							"..", "..", "data"))
+
 require 'contacts/rdf_address_book'
 require 'rdf'
-
-data_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data"))
 
 describe RDFAddressBook do
 

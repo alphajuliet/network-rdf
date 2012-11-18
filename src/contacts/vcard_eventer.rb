@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'vpim/vcard'
+require 'vcard'
 
 class VCardEventer
 
