@@ -10,7 +10,7 @@ gem "rspec", "2.11.0"
 gem "rdf", "0.3.8"
 gem "rdf-turtle", "0.1.2"
 gem "rdf-json", "0.3.0"
-gem "vcard"
+gem "vcard" # not vpim
 gem "linkedin", "0.3.7"
 
 # SPARQL
@@ -20,3 +20,4 @@ gem "sparql-client", "0.3.0"
 # Web front end
 gem "sinatra", "1.3.3"
 gem "markaby", "0.7.2"
+gem "thin"
