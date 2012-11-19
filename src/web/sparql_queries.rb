@@ -78,16 +78,13 @@ module SparqlQueries
 			"SELECT DISTINCT ?name 
 			WHERE {
 				{
-					?a a foaf:Person .
 					?a foaf:name ?name .
-					?a foaf:knows ?b .
-					?b foaf:name \'#{params[:name]}\' .
+					?a foaf:knows [ skos:prefLabel \'#{params[:name]}\' ] .
 				}
 				UNION
 				{
 					?c foaf:name \'#{params[:name]}\' .
-					?c foaf:knows ?d .
-					?d foaf:name ?name .
+					?c foaf:knows [ skos:prefLabel ?name ] .
 				}
 			}"		
 		end
