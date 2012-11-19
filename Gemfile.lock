@@ -1,7 +1,6 @@
 GIT
   remote: https://github.com/qoobaa/vcard.git
   revision: 0594fee6fc56e4d6aae2785449940e09126d8160
-  ref: 0594fee6fc56
   specs:
     vcard (0.1.1)
 
