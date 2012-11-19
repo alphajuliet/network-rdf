@@ -5,7 +5,8 @@ require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
 require 'config'
-
+require 'rest_client'
+require 'sparql_client'
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
@@ -50,9 +51,6 @@ namespace :contacts do
 	
 	desc "Load RDF/Turtle into the triple store."
 	task :load do
-		require 'rubygems'
-		require 'rest_client'                     
-
 		# Files to load
 		files = ["statements-1.ttl", "contacts-#{today}.ttl", "inferences.ttl"]
 		graph    = 'http://alphajuliet.com/ns/network-rdf'
@@ -68,8 +66,6 @@ namespace :contacts do
 
 	desc "Update the triple store"
 	task :update do
-		require 'rubygems'
-		require 'rest_client'
 		endpoint = MyConfig.get('repo-endpoint')
 		puts "Updating the store with #{contacts_ttl}"
 		response = RestClient.put endpoint, File.read(contacts_ttl), :content_type => 'text/turtle'
@@ -130,16 +126,14 @@ namespace :rdfstore do
 		sh "#{server} -p 8000 #{instance}"
 	end
 
-	desc "Clear the repository"
+	desc "Delete all statements from the repository"
 	task :clear do
-		require 'sparql_client'
-		# puts SparqlClient.clear("GRAPH <" + MyConfig.get('graph-uri') + ">")
-		puts SparqlClient.clear("DEFAULT")
+		response = RestClient.delete MyConfig.get('repo-endpoint')
+		puts response
 	end
 	
 	desc "Insert triples into the repo using SPARQL INSERT"
 	task :load do
-		require 'sparql_client'
 		src_file = File.new(contacts_ttl)
 		triples = src_file.readlines
 		puts SparqlClient.insert(triples.join("\n"))
@@ -147,10 +141,15 @@ namespace :rdfstore do
 	
 	desc "Load the repository with the latest triples"
 	task :import do
-		require 'rest_client'
 		puts "Uploading #{contacts_ttl}"
 		response = RestClient.put MyConfig.get('repo-endpoint'), 
 			{ :file => File.new(contacts_ttl), :content_type => "multipart/form-data" } 
+		puts response
+	end
+	
+	desc "Get the repository metadata"
+	task :meta do
+		response = RestClient.get MyConfig.get('rest-endpoint') + "/meta", :accept => :xml
 		puts response
 	end
 	
@@ -173,7 +172,6 @@ end
 #----------------
 desc "Run a SPARQL select query"
 task :select, :query do |t, args|
-	require 'sparql_client'
 	src = File.join(ex_dir, args[:query] + ".sparql")
 	puts "Run examples/#{src}"
 	puts SparqlClient.select(src)
@@ -181,7 +179,6 @@ end
 
 desc "Run a SPARQL construct query"
 task :construct, :query do |t, args|
-	require 'sparql_client'
 	src = File.join(ex_dir, args[:query] + ".sparql")
 	puts "Run examples/#{src}"
 	SparqlClient.construct(src)

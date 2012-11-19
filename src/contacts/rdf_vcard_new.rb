@@ -38,6 +38,7 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF::FOAF.name, name]
 		@triples << [@subject, RDF::SKOS.prefLabel, name]
 		@triples << [@card, RDF::V.fn, name]	
+		puts "Adding #{name}"
 	end
 		
 	def do_email(e)
@@ -84,7 +85,7 @@ class RDFVCard < VCardEventer
 			@triples << [@membership, RDF::ORG.member, @subject]
 			
 			# Add the organisation
-			company_id = "org-" + org.first.downcase.tr('\.&+ ', ' -')
+			company_id = "org-" + org.first.downcase.tr('\.&+ ', '-')
 			company = RDF::AJC[company_id]
 			@triples << [@membership, RDF::ORG.organization, company]
 			@triples << [company, RDF.type, RDF::ORG.Organization]
@@ -106,41 +107,57 @@ class RDFVCard < VCardEventer
 	
 	def do_note(e)
 		@triples << [@card, RDF::V.note, e.value.to_s]
-		if (e.value =~ /rdf:\s*\{(.+)\}/m)
+		if (e.value =~ /rdf:\s*\{(.+)\}/m) # /m = multi-line pattern
 			rdf = $1
-			# Expand prefixes into their URIs
-			rdf.gsub!(/(\w+):(\S*)/) { |p| '<' + RDF::Vocabulary.expand($1) + $2 + '>'}
-			# Map <> into the subject
-			rdf.gsub!('<>', "<#{@subject}>")
-			# Parse the RDF as Turtle statements
-			# Add as triples			
-			parse_turtle(rdf)
+			rdf.gsub!(/<>/, "#{@subject}")
+			puts "Adding #{rdf}"
+			parse_turtle(RDF.Prefixes << rdf)
 		end
 	end
 
+	def do_url(e)
+		if e.group.size == 0
+			@triples << [@subject, RDF::FOAF.homepage, RDF::URI(e.value.uri)]
+		else
+			@rel[e.group] = Hash.new if @rel[e.group].nil?
+			@rel[e.group][:object] = e.value.uri
+		end
+	end
+	
 	def do_x_abrelatednames(e)
 		@rel[e.group] = Hash.new if @rel[e.group].nil?
 		@rel[e.group][:object] = e.value
 	end
 	
 	def do_x_ablabel(e)
+		return if e.value == "_$!<Other>!$_"
 		@rel[e.group] = Hash.new if @rel[e.group].nil?
 		@rel[e.group][:property] = e.value
 	end
 		
+	def do_impp(e)
+		# Do nothing
+	end
+	
 	#------------------------
 	def patch_subject_id
 		@triples.map! do |tr|
-			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[@id] : x } unless tr.nil?
+			next if tr.nil?
+			next if tr.instance_of?(RDF::Statement)
+			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[@id] : x }
 		end				
 	end
 	
 	def process_related_names
 		@rel.each_pair do |group, entry|
 			property = RDF::Vocabulary.expand_curie(entry[:property])
-			property = RDF::FOAF.knows if property =~ /^_\$/	
+			property = RDF::FOAF.knows if property =~ /^_\$/
+			property = RDF::FOAF.knows if property == entry[:property]
+			property = RDF::FOAF.homepage if property =~ /Website$/
+			property = RDF::FOAF.homepage if property =~ /profile$/
 			
 			object = RDF::Vocabulary.expand_curie(entry[:object])
+			return if object.nil?
 				
 			# If the target is _not_ already a URI then we need a layer of indirection
 			if object.instance_of?(RDF::URI)
@@ -153,10 +170,6 @@ class RDFVCard < VCardEventer
 			end
 				
 		end
-		#person = RDF::Node.new
-		#@triples << [person, RDF::FOAF.name, e.value]
-		#@triples << [person, RDF.type, RDF::FOAF.Person]
-		#@triples << [@subject, RDF::FOAF.knows, person]
 	end
 	
 	def finalise
@@ -168,7 +181,7 @@ class RDFVCard < VCardEventer
 	def parse_turtle(text)
 		r = RDF::Turtle::Reader.new(text)
 		r.each_statement do |s|
-			@triples << s.to_triple			
+			@triples << s			
 		end
 	end
 	

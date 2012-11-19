@@ -132,6 +132,15 @@ describe RDFAddressBook do
 		solutions.first[:title].should eq("CTO")
 	end
 		
+	it "contains a home page URL" do
+		query = RDF::Query.new do
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::FOAF.homepage, :page]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(2)
+	end
+	
 	it "prints out the RDF" do
 		puts @ab_test1.to_turtle
 	end
