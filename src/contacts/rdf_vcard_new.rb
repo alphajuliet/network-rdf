@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.join(File.dirname(__FILE__), "..", "src")
+$:.unshift File.join(File.dirname(__FILE__), "..")
 require 'rdf'
 require 'rdf/turtle'
 require 'my_prefixes'
@@ -17,6 +17,7 @@ class RDFVCard < VCardEventer
 	def to_rdf
 		add_person
 		process
+		finalise
 		@triples
 	end
 
@@ -28,6 +29,7 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF::GLDP.card, @card]
 		@triples << [@card, RDF.type, RDF::V.VCard]
 		@triples << [RDF::AJP.AndrewJ, RDF::FOAF.knows, @subject]
+		@rel = Hash.new
 	end
 	
 	#------------------------
@@ -99,10 +101,7 @@ class RDFVCard < VCardEventer
 	end
 			
 	def do_x_abuid(e)
-		id = "person-" + e.value.split(':').first
-		@triples.map! do |tr|
-			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[id] : x } unless tr.nil?
-		end
+		@id = "person-" + e.value.split(':').first
 	end
 	
 	def do_note(e)
@@ -120,23 +119,49 @@ class RDFVCard < VCardEventer
 	end
 
 	def do_x_abrelatednames(e)
-		person = lookup_person(e.value) || RDF::Node.new
-		@triples << [person, RDF::FOAF.name, e.value]
-		@triples << [person, RDF.type, RDF::FOAF.Person]
-		@triples << [@subject, RDF::FOAF.knows, person]
-	end
-	
-	def lookup_person(name)
-		return nil
-		
-		# Keep this for later
-		matches = @triples.select { |tr| (tr[1] == RDF::FOAF.name) && (tr[2].to_s == name) }
-		return nil if matches.size == 0
-		matches.first[0]
+		@rel[e.group] = Hash.new if @rel[e.group].nil?
+		@rel[e.group][:object] = e.value
 	end
 	
 	def do_x_ablabel(e)
-		#puts "X-ABLabel: #{e.group}, #{e.value}"
+		@rel[e.group] = Hash.new if @rel[e.group].nil?
+		@rel[e.group][:property] = e.value
+	end
+		
+	#------------------------
+	def patch_subject_id
+		@triples.map! do |tr|
+			tr.map! { |x| (x == RDF::AJC.id) ? RDF::AJC[@id] : x } unless tr.nil?
+		end				
+	end
+	
+	def process_related_names
+		@rel.each_pair do |group, entry|
+			property = RDF::Vocabulary.expand_curie(entry[:property])
+			property = RDF::FOAF.knows if property =~ /^_\$/	
+			
+			object = RDF::Vocabulary.expand_curie(entry[:object])
+				
+			# If the target is _not_ already a URI then we need a layer of indirection
+			if object.instance_of?(RDF::URI)
+				@triples << [@subject, property, object]
+			else
+				target = RDF::Node.new
+				@triples << [target, RDF.type, RDF::FOAF.Agent]
+				@triples << [@subject, property, target]
+				@triples << [target, RDF::SKOS.prefLabel, object]
+			end
+				
+		end
+		#person = RDF::Node.new
+		#@triples << [person, RDF::FOAF.name, e.value]
+		#@triples << [person, RDF.type, RDF::FOAF.Person]
+		#@triples << [@subject, RDF::FOAF.knows, person]
+	end
+	
+	def finalise
+		process_related_names
+		patch_subject_id
 	end
 	
 	# Parse the given RDF and add to the triples

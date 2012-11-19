@@ -28,10 +28,10 @@ describe RDFAddressBook do
 	
 	it "contains the FOAF name" do
 		query = RDF::Query.new do
-			pattern [:person, RDF::FOAF.name, :name]
+			pattern [:person, RDF::SKOS.prefLabel, :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(3)
+		solutions.count.should eq(7)
 	end
 		
 	it "contains a VCard with the fullname" do
@@ -87,11 +87,11 @@ describe RDFAddressBook do
 		solutions.count.should eq(1)		
 	end
 	
-	it "contains triples from an RDF/Turtle note" do
+	it "contains triples from additional relationships" do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::NET.workedAt, :c]
-			pattern [:c, RDF::SKOS.prefName, "Oracle Australia"]
+			pattern [:c, RDF::SKOS.prefLabel, "Oracle Australia"]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)		
@@ -101,10 +101,10 @@ describe RDFAddressBook do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::FOAF.knows, :name]
-			pattern [:name, RDF.type, RDF::FOAF.Person]
+			pattern [:name, RDF.type, RDF::FOAF.Agent]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(2)
+		solutions.count.should eq(3)
 		# solutions.first[:name].should eq("John Smith")
 	end
 	
@@ -131,7 +131,7 @@ describe RDFAddressBook do
 		solutions = query.execute(@ab_test1.graph)
 		solutions.first[:title].should eq("CTO")
 	end
-	
+		
 	it "prints out the RDF" do
 		puts @ab_test1.to_turtle
 	end

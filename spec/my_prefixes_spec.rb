@@ -18,4 +18,9 @@ describe RDF do
 		RDF.Prefixes(:sparql).should =~ /^PREFIX rdf:/
 	end
 	
+	it "expands CURIEs into URIs" do
+		RDF::Vocabulary.expand_curie("net:workedAt").to_s.should eq("http://alphajuliet.com/ns/ont/network#workedAt")
+		RDF::Vocabulary.expand_curie("abcde").should eq("abcde")
+	end
+	
 end

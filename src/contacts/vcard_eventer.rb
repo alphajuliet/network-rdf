@@ -1,8 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'vcard'
-
 class VCardEventer
 
 	def initialize(vcard)

@@ -4,7 +4,7 @@ $:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'linkedin/rdf_linked_in'
 
 describe RDFLinkedIn do
-	
+=begin	
 	before do
 		@li = MyLinkedIn.new
 		@net = RDFLinkedIn.new(@li)
@@ -26,7 +26,7 @@ describe RDFLinkedIn do
 		@net.add_connection(c[0])
 		@net.graph.count.should be >n
 	end
-		
+=end		
 end
 
 # The End

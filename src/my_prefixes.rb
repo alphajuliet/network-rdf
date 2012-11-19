@@ -75,8 +75,16 @@ module RDF
 				raise ArgumentError, "#{prefix} not recognised."
 			end
 		end
-	end
-
-end
+		
+		def self.expand_curie(curie)
+			if (curie =~ /^(\w+):([-_\w]+)/)
+				RDF::URI.new(self.expand($1) + $2)
+			else
+				curie
+			end
+		end
+		
+	end # class Vocabulary
+end # module RDF
 
 # The End

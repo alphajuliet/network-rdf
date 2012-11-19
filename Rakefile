@@ -40,7 +40,7 @@ namespace :contacts do
 	end
 	
 	desc "Generate RDF/Turtle from the contacts VCard file."
-	task :turtle => [:export] do
+	task :turtle => :export do
 		require 'contacts/rdf_address_book'	
 		puts "Writing to #{contacts_ttl}"
 		ab = RDFAddressBook.new_from_file(contacts_vcf)
@@ -160,8 +160,13 @@ end
 namespace :web do
 	desc "Start the web UI"
 	task :start do
-		cmd = "ruby -rubygems " + File.join(web_dir, "home.rb") + " -p $PORT"
-		sh cmd
+		if ENV["PORT"].nil?
+			puts "Environment setting PORT not set"
+		else
+			puts "Running on port #{ENV["PORT"]}"
+			cmd = "ruby -rubygems " + File.join(web_dir, "home.rb") + " -p $PORT"
+			sh cmd
+		end
 	end
 end
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # RDF my address book
 
-$:.unshift File.join(File.dirname(__FILE__), "..", "src")
+$:.unshift File.join(File.dirname(__FILE__), "..")
 require 'rubygems'
 require 'vcard'
 require 'rdf'
