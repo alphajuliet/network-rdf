@@ -21,6 +21,7 @@ describe RDF do
 	it "expands CURIEs into URIs" do
 		RDF::Vocabulary.expand_curie("net:workedAt").to_s.should eq("http://alphajuliet.com/ns/ont/network#workedAt")
 		RDF::Vocabulary.expand_curie("abcde").should eq("abcde")
+		RDF::Vocabulary.expand_curie("http://example.org/").should be instance_of?(RDF::URI)
 	end
 	
 end

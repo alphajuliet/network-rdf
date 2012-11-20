@@ -80,7 +80,11 @@ module RDF
 			if (curie =~ /^(\w+):([-_\w]+)/)
 				RDF::URI.new(self.expand($1) + $2)
 			else
-				curie
+				if (curie =~ /^http/)
+					RDF::URI(curie)
+				else
+					curie
+				end
 			end
 		end
 		
