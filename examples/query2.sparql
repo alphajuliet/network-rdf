@@ -1,9 +1,0 @@
-CONSTRUCT { 
-	?p foaf:name ?n .
-} WHERE {
-	?m a org:Membership .
-	?m org:organization [ skos:prefLabel "Unico" ] .
-	?m org:member ?p .
-	?p foaf:name ?n .
-}
-LIMIT 10
