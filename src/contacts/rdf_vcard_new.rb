@@ -29,7 +29,7 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF::GLDP.card, @card]
 		@triples << [@card, RDF.type, RDF::V.VCard]
 		@triples << [RDF::AJP.AndrewJ, RDF::FOAF.knows, @subject]
-		@rel = Hash.new
+		@group = Hash.new
 	end
 	
 	#------------------------
@@ -38,7 +38,7 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF::FOAF.name, name]
 		@triples << [@subject, RDF::SKOS.prefLabel, name]
 		@triples << [@card, RDF::V.fn, name]	
-		puts "Adding #{name}"
+		# puts "Adding #{name}"
 	end
 		
 	def do_email(e)
@@ -98,7 +98,7 @@ class RDFVCard < VCardEventer
 		acct = RDF::Node.new
 		@triples << [@subject, RDF::FOAF.account, acct]
 		@triples << [acct, RDF.type, RDF::FOAF.OnlineAccount]
-		@triples << [acct, RDF::FOAF.accountName, p.to_s]		
+		@triples << [acct, RDF::FOAF.accountName, RDF::Vocabulary.expand_curie(p)]		
 	end
 			
 	def do_x_abuid(e)
@@ -116,23 +116,23 @@ class RDFVCard < VCardEventer
 	end
 
 	def do_url(e)
-		if e.group.size == 0
-			@triples << [@subject, RDF::FOAF.homepage, RDF::URI(e.value.uri)]
+		if e.group.length == 0
+			property = RDF::FOAF.homepage
+			@triples << [@subject, property, RDF::Vocabulary.expand_curie(e.value.uri)]
 		else
-			@rel[e.group] = Hash.new if @rel[e.group].nil?
-			@rel[e.group][:object] = e.value.uri
+			@group[e.group] = Hash.new if @group[e.group].nil?
+			@group[e.group][:object] = e.value.uri
 		end
 	end
 	
 	def do_x_abrelatednames(e)
-		@rel[e.group] = Hash.new if @rel[e.group].nil?
-		@rel[e.group][:object] = e.value
+		@group[e.group] = Hash.new if @group[e.group].nil?
+		@group[e.group][:object] = e.value
 	end
 	
 	def do_x_ablabel(e)
-		return if e.value == "_$!<Other>!$_"
-		@rel[e.group] = Hash.new if @rel[e.group].nil?
-		@rel[e.group][:property] = e.value
+		@group[e.group] = Hash.new if @group[e.group].nil?
+		@group[e.group][:property] = e.value
 	end
 		
 	def do_impp(e)
@@ -148,22 +148,30 @@ class RDFVCard < VCardEventer
 		end				
 	end
 	
-	def process_related_names
-		@rel.each_pair do |group, entry|
+	def map_relationship(property)
+		p = property
+		return p if property.instance_of?(RDF::URI)
+		p = RDF::RDFS.seeAlso # default
+		p = RDF::FOAF.homepage if property =~ /(website$)|(HomePage)|(profile)/i
+		p = RDF::FOAF.workplaceHomepage if property =~ /company website$/i
+		p = RDF::FOAF.weblog if property =~ /blog/i
+		p
+	end
+	
+	def process_groups
+		@group.each_pair do |group, entry|
 			property = RDF::Vocabulary.expand_curie(entry[:property])
-			property = RDF::FOAF.knows if property =~ /^_\$/
-			property = RDF::FOAF.knows if property == entry[:property]
-			property = RDF::FOAF.homepage if property =~ /Website$/
-			property = RDF::FOAF.homepage if property =~ /profile$/
-			
 			object = RDF::Vocabulary.expand_curie(entry[:object])
 			return if object.nil?
 				
 			# If the target is _not_ already a URI then we need a layer of indirection
 			if object.instance_of?(RDF::URI)
+				property = map_relationship(property)
+				return if property.nil?
 				@triples << [@subject, property, object]
 			else
 				target = RDF::Node.new
+				property = RDF::FOAF.knows unless property.instance_of?(RDF::URI) 
 				@triples << [target, RDF.type, RDF::FOAF.Agent]
 				@triples << [@subject, property, target]
 				@triples << [target, RDF::SKOS.prefLabel, object]
@@ -173,7 +181,7 @@ class RDFVCard < VCardEventer
 	end
 	
 	def finalise
-		process_related_names
+		process_groups
 		patch_subject_id
 	end
 	

@@ -1,10 +1,7 @@
 #!/usr/bin/env ruby
 
 $:.unshift File.join(File.dirname(__FILE__), "..", "..", "src")
-data_dir = File.expand_path(
-						File.join(
-							File.dirname(__FILE__), 
-							"..", "..", "data"))
+data_dir = File.expand_path( File.join( File.dirname(__FILE__),  "..", "..", "data"))
 
 require 'contacts/rdf_address_book'
 require 'rdf'
@@ -28,10 +25,11 @@ describe RDFAddressBook do
 	
 	it "contains the FOAF name" do
 		query = RDF::Query.new do
-			pattern [:person, RDF::SKOS.prefLabel, :name]
+			pattern [RDF::AJC["person-6D9E0CBF-C599-4BEC-8C01-B1B699914D04"], RDF::FOAF.name, :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(7)
+		solutions.count.should eq(1)
+		solutions.first[:name].should eq("Jane Smith")
 	end
 		
 	it "contains a VCard with the fullname" do
@@ -74,7 +72,7 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)		
-		solutions.first[:acctName].should eq("http://twitter.com/janesmith12345")
+		solutions.first[:acctName].to_s.should eq("http://www.linkedin.com/in/janesmith12345")
 	end
 	
 	it "contains the note information" do
@@ -131,14 +129,15 @@ describe RDFAddressBook do
 		solutions = query.execute(@ab_test1.graph)
 		solutions.first[:title].should eq("CTO")
 	end
-		
-	it "contains a home page URL" do
+	
+	it "contains home pages" do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::FOAF.homepage, :page]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(2)
+		solutions.count.should eq(3)
+		solutions.first[:page].to_s.should eq("http://www.example.org/")
 	end
 	
 	it "prints out the RDF" do
