@@ -1,6 +1,8 @@
 # Triple store info
 
 # Dydra
+dydra-token: pH9iszmNQWav1k0RZZYA
+dydra-repo: network-rdf
 sparql-endpoint: http://pH9iszmNQWav1k0RZZYA@api.dydra.com/alphajuliet/network-rdf/sparql
 rest-endpoint: http://pH9iszmNQWav1k0RZZYA@api.dydra.com/alphajuliet/network-rdf
 repo-endpoint: http://pH9iszmNQWav1k0RZZYA@api.dydra.com/alphajuliet/network-rdf/statements

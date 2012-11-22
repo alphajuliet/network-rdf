@@ -13,6 +13,9 @@ gem "rdf-json", "0.3.0"
 gem "vcard", "0.1.1", :git => "https://github.com/qoobaa/vcard.git"
 gem "linkedin", "0.3.7"
 
+# Back end RDF store
+gem 'dydra', :git => 'git://github.com/dydra/dydra.git'
+
 # SPARQL
 gem "rest-client", "1.6.7"
 gem "sparql-client", "0.3.1"
