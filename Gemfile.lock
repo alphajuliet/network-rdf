@@ -27,7 +27,7 @@ GEM
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
-    rake (10.0.1)
+    rake (10.0.2)
     rdf (0.3.9)
       addressable (>= 2.2.6)
     rdf-json (0.3.0)
@@ -65,7 +65,7 @@ PLATFORMS
 DEPENDENCIES
   linkedin (= 0.3.7)
   markaby (= 0.7.2)
-  rake (= 10.0.1)
+  rake
   rdf (= 0.3.9)
   rdf-json (= 0.3.0)
   rdf-turtle (= 0.3.0)

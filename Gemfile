@@ -3,7 +3,7 @@
 source "http://rubygems.org/"
 
 # General
-gem "rake", "10.0.1"
+gem "rake"
 gem "rspec"
 
 # RDF and data
