@@ -28,7 +28,12 @@ class RDFVCard < VCardEventer
 		@triples << [@subject, RDF.type, RDF::FOAF.Person]
 		@triples << [@subject, RDF::GLDP.card, @card]
 		@triples << [@card, RDF.type, RDF::V.VCard]
-		@triples << [RDF::AJP.AndrewJ, RDF::FOAF.knows, @subject]
+
+		# I know every contact
+		# me = RDF::Node.new
+		# @triples << [me, RDF::FOAF.name, "Andrew Joyner"]
+		# @triples << [me, RDF::FOAF.knows, @subject]
+		
 		@group = Hash.new
 	end
 	
@@ -36,9 +41,7 @@ class RDFVCard < VCardEventer
 	def do_n(e)
 		name = e.value.fullname
 		@triples << [@subject, RDF::FOAF.name, name]
-		@triples << [@subject, RDF::SKOS.prefLabel, name]
-		@triples << [@card, RDF::V.fn, name]	
-		# puts "Adding #{name}"
+		@triples << [@card, RDF::V.fn, name]
 	end
 		
 	def do_email(e)
@@ -110,7 +113,6 @@ class RDFVCard < VCardEventer
 		if (e.value =~ /rdf:\s*\{(.+)\}/m) # /m = multi-line pattern
 			rdf = $1
 			rdf.gsub!(/<>/, "#{@subject}")
-			puts "Adding #{rdf}"
 			parse_turtle(RDF.Prefixes << rdf)
 		end
 	end
@@ -158,6 +160,13 @@ class RDFVCard < VCardEventer
 		p
 	end
 	
+	def lookup_range(property)
+		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::FOAF.knows
+		range = {:class => RDF::ORG.Organization, :identifier => RDF::SKOS.prefLabel } if property == RDF::NET.workedAt
+		raise ArgumentError, "Error: unrecognised property: #{property}" if range.nil?
+		range
+	end
+	
 	def process_groups
 		@group.each_pair do |group, entry|
 			property = RDF::Vocabulary.expand_curie(entry[:property])
@@ -172,9 +181,10 @@ class RDFVCard < VCardEventer
 			else
 				target = RDF::Node.new
 				property = RDF::FOAF.knows unless property.instance_of?(RDF::URI) 
-				@triples << [target, RDF.type, RDF::FOAF.Agent]
+				x = lookup_range(property)
+				@triples << [target, RDF.type, x[:class]]
 				@triples << [@subject, property, target]
-				@triples << [target, RDF::SKOS.prefLabel, object]
+				@triples << [target, x[:identifier], object]
 			end
 				
 		end

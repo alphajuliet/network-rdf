@@ -79,12 +79,12 @@ module SparqlQueries
 			WHERE {
 				{
 					?a foaf:name ?name .
-					?a foaf:knows [ skos:prefLabel \'#{params[:name]}\' ] .
+					?a foaf:knows [ foaf:name \'#{params[:name]}\' ] .
 				}
 				UNION
 				{
 					?c foaf:name \'#{params[:name]}\' .
-					?c foaf:knows [ skos:prefLabel ?name ] .
+					?c foaf:knows [ foaf:name ?name ] .
 				}
 			}"		
 		end
@@ -103,6 +103,16 @@ module SparqlQueries
 			GROUP BY ?orgname
 			HAVING (COUNT (?p) >= #{min})
 			ORDER BY DESC(?members)"
+		end
+	end
+	
+	def cmd_people_knows
+		query(:query1) do
+			"SELECT ?n1 ?n2
+			WHERE {
+				?a foaf:name ?n1 .
+				?a foaf:knows [ foaf:name ?n2 ] .
+			}"
 		end
 	end
 	

@@ -22,8 +22,10 @@ module RDF
 		:dbo 		=> "http://dbpedia.org/ontology/",
 		:skos 	=> "http://www.w3.org/2004/02/skos/core#",
 		:rel		=> "http://purl.org/vocab/relationship",
+		:dct		=> "http://purl.org/dc/terms/",
 		
 		:net 		=> "http://alphajuliet.com/ns/ont/network#",
+		:drink	=> "http://alphajuliet.com/ns/ont/drink#",
 		:ajc 		=> "http://alphajuliet.com/ns/contact#",
 		:ajp 		=> "http://alphajuliet.com/ns/people#",
 		nil			=> "http://alphajuliet.com/ns/contact#"
@@ -38,14 +40,15 @@ module RDF
 	AJP		= RDF.CreateVocab(:ajp)
 	AJC 	= RDF.CreateVocab(:ajc)
 	NET		= RDF.CreateVocab(:net)
+	DRINK	= RDF.CreateVocab(:drink)
 	ORG		= RDF.CreateVocab(:org)
 	GLDP	= RDF.CreateVocab(:gldp)
 	V			= RDF.CreateVocab(:v)
-
+	DB		= RDF.CreateVocab(:db)
+	DBP		= RDF.CreateVocab(:dbp)
+	DBO		= RDF.CreateVocab(:dbo)
+	
 	# Save for later
-	#DB		= RDF.CreateVocab(:db)
-	#DBP		= RDF.CreateVocab(:dbp)
-	#DBO		= RDF.CreateVocab(:dbo)
 	#REL		= RDF.CreateVocab(:rel)
 	
 	#------------------------

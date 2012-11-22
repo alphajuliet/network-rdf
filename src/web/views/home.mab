@@ -15,6 +15,7 @@ html do
 		div.main! do
 			h1 "Query"
 			p { a "All people and their organisation", :href => "/people/all" }
+			p { a "Who knows who", :href => "/people/knows" }
 			p { a "Contacts with no email address", :href => "/no-email" }
 			p { a "Organisations by people count", :href => "/org/count_by_person" }
 			p do

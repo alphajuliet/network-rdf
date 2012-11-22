@@ -89,6 +89,7 @@ describe RDFAddressBook do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::NET.workedAt, :c]
+			pattern [:c, RDF.type, RDF::ORG.Organization]
 			pattern [:c, RDF::SKOS.prefLabel, "Oracle Australia"]
 		end
 		solutions = query.execute(@ab_test1.graph)
@@ -99,7 +100,7 @@ describe RDFAddressBook do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::FOAF.knows, :name]
-			pattern [:name, RDF.type, RDF::FOAF.Agent]
+			pattern [:name, RDF.type, RDF::FOAF.Person]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(3)
