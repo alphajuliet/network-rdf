@@ -1,0 +1,24 @@
+# Visualise results
+html do
+	head do
+		title "network-rdf: visualise"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/viz.less"
+		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
+		script :type => "text/javascript", :src => "/script/underscore-min.js" do end		
+		script :type => "text/javascript", :src => "/script/d3.v2.min.js" do end
+	end
+	body do
+		div.header! do
+			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+			span { a "network-rdf", :href => "/" }
+		end
+		div.main! do
+			h1 "Visualisation"
+			div.viz! do
+				# Visualisation stuff here
+			end
+			script :type => "text/javascript", :src => "/script/viz_people_knows.js" do end
+		end
+	end
+end

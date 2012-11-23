@@ -24,7 +24,18 @@ module SparqlQueries
 			to_json(result)
 		end
 	end
-		
+	
+	def cmd_people_names
+		query(:query1) do
+			"SELECT ?name
+			WHERE {
+				?p a foaf:Person .
+				?p foaf:name ?name .
+			}
+			ORDER BY ?name"
+		end
+	end
+	
 	def cmd_people_all
 		query(:query1) do
 			"SELECT ?name ?orgname ?mobile ?email
@@ -108,10 +119,10 @@ module SparqlQueries
 	
 	def cmd_people_knows
 		query(:query1) do
-			"SELECT ?n1 ?n2
+			"SELECT ?source ?target
 			WHERE {
-				?a foaf:name ?n1 .
-				?a foaf:knows [ foaf:name ?n2 ] .
+				?a foaf:name ?source .
+				?a foaf:knows [ foaf:name ?target ] .
 			}"
 		end
 	end
