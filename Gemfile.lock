@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/dydra/dydra.git
+  revision: ee74402a00e26f264730c83f710cc1cab79304a5
+  specs:
+    dydra (0.0.11)
+      rdf (>= 0.3.0)
+      rest-client (>= 1.6.7)
+
+GIT
   remote: https://github.com/qoobaa/vcard.git
   revision: 0594fee6fc56e4d6aae2785449940e09126d8160
   specs:
@@ -63,6 +71,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dydra!
   linkedin (= 0.3.7)
   markaby (= 0.7.2)
   rake

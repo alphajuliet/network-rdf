@@ -35,7 +35,7 @@ html do
 				input :type => "button", :id => "cmd_people_at", :value => "Go"
 			end			
 			h1 "Visualise"
-			p { a "Simple data", :href => "/viz" }
+			p { a "Org count by person", :href => "/viz/org/count_by_person" }
 			h1 "Admin"
 			p { a "Repository metadata", :href => "/repo" }
 		end

@@ -13,11 +13,11 @@ html do
 			span { a "network-rdf", :href => "/" }
 		end
 		div.main! do
-			h1 "Contacts in each organisation"
+			h1 "Visualisation"
 			div.viz! do
 				# Visualisation stuff here
 			end
-			script :type => "text/javascript", :src => "/script/viz.js" do end
+			script :type => "text/javascript", :src => "/script/viz_count_by_person.js" do end
 		end
 	end
 end

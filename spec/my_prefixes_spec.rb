@@ -23,5 +23,4 @@ describe RDF do
 		RDF::Vocabulary.expand_curie("abcde").should eq("abcde")
 		RDF::Vocabulary.expand_curie("http://example.org/").instance_of?(RDF::URI).should be true
 	end
-	
 end

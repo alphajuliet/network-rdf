@@ -7,6 +7,7 @@ require 'rake/clean'
 require 'config'
 require 'rest_client'
 require 'sparql_client'
+require 'dydra'
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
@@ -75,12 +76,6 @@ namespace :contacts do
 	desc "Export, transform, and load contact info into the triple store."
 	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load']
 
-	desc "Print out all the prefixes"
-	task :prefixes do
-		require 'my_prefixes'
-		puts RDF.Prefixes(:sparql)
-	end
-	
 end
 
 #----------------
@@ -112,7 +107,7 @@ namespace :linkedin do
 end
 
 #----------------
-namespace :rdfstore do
+namespace :fourstore do
 
 	desc "Create and start the local 4store triple store"
 	task :start do
@@ -126,31 +121,40 @@ namespace :rdfstore do
 		sh "#{server} -p 8000 #{instance}"
 	end
 
-	desc "Delete all statements from the repository"
-	task :clear do
-		response = RestClient.delete MyConfig.get('repo-endpoint')
-		puts response
+end
+
+#----------------
+namespace :dydra do
+
+	desc "Get number of triples"
+	task :size do
+		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		account = Dydra::Account.new('alphajuliet')
+		repo = account[MyConfig.get('dydra-repo')]
+		puts "#{repo.count} triples"
 	end
 	
-	desc "Insert triples into the repo using SPARQL INSERT"
+	desc "Clear all statements"
+	task :clear_all do
+		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		account = Dydra::Account.new('alphajuliet')
+		repo = account[MyConfig.get('dydra-repo')]
+		repo.clear!
+	end
+	
+	desc "Load new triples"
 	task :load do
-		src_file = File.new(contacts_ttl)
-		triples = src_file.readlines
-		puts SparqlClient.insert(triples.join("\n"))
-	end
-	
-	desc "Load the repository with the latest triples"
-	task :import do
-		puts "Uploading #{contacts_ttl}"
-		response = RestClient.put MyConfig.get('repo-endpoint'), 
-			{ :file => File.new(contacts_ttl), :content_type => "multipart/form-data" } 
-		puts response
-	end
-	
-	desc "Get the repository metadata"
-	task :meta do
-		response = RestClient.get MyConfig.get('rest-endpoint') + "/meta", :accept => :xml
-		puts response
+		puts "Loading triples from #{contacts_ttl}"
+		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		account = Dydra::Account.new('alphajuliet')
+		repo = account[MyConfig.get('dydra-repo')]
+		RDF::Reader.open(contacts_ttl) do |reader|
+			statements = []
+			reader.each_statement do |statement|
+				statements << statement
+			end
+		end
+		repo.import!(statements)
 	end
 	
 end
@@ -170,18 +174,28 @@ namespace :web do
 end
 
 #----------------
-desc "Run a SPARQL select query"
-task :select, :query do |t, args|
-	src = File.join(ex_dir, args[:query] + ".sparql")
-	puts "Run examples/#{src}"
-	puts SparqlClient.select(src)
+# Various other tasks
+
+desc "Print out all the prefixes"
+task :prefixes do
+	require 'my_prefixes'
+	puts RDF.Prefixes(:sparql)
 end
 
-desc "Run a SPARQL construct query"
-task :construct, :query do |t, args|
-	src = File.join(ex_dir, args[:query] + ".sparql")
-	puts "Run examples/#{src}"
-	SparqlClient.construct(src)
+#----------------
+namespace :sparql do
+	desc "Run a local SPARQL select query"
+	task :select, :query do |t, args|
+		src = File.join(ex_dir, args[:query] + ".sparql")
+		puts "# Run examples/#{src}"
+		puts SparqlClient.select(src)
+	end
+	
+	desc "Run a local SPARQL construct query"
+	task :construct, :query do |t, args|
+		src = File.join(ex_dir, args[:query] + ".sparql")
+		puts "# Run examples/#{src}"
+		SparqlClient.construct(src)
+	end
 end
-
 # The End
