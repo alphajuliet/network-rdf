@@ -187,14 +187,14 @@ namespace :sparql do
 	desc "Run a local SPARQL select query"
 	task :select, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "Run examples/#{src}"
+		puts "# Run examples/#{src}"
 		puts SparqlClient.select(src)
 	end
 	
 	desc "Run a local SPARQL construct query"
 	task :construct, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "Run examples/#{src}"
+		puts "# Run examples/#{src}"
 		SparqlClient.construct(src)
 	end
 end
