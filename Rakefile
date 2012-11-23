@@ -17,6 +17,7 @@ here = File.dirname(__FILE__)
 config = YAML.load(File.open(File.join(here, "src", "config.yaml")))
 data_dir = File.expand_path(File.join(here, "data"))
 ex_dir = File.expand_path(File.join(here, "examples"))
+query_dir = File.expand_path(File.join(here, "src", "query"))
 web_dir = File.expand_path(File.join(here, "src", "web"))
 
 contacts_vcf = File.join(data_dir, "contacts-#{today}.vcf")
@@ -48,6 +49,12 @@ namespace :contacts do
 		ab = RDFAddressBook.new_from_file(contacts_vcf)
 		ab.convert_to_rdf
 		ab.write_as_turtle(contacts_ttl)
+	end
+	
+	desc "Generate inferred triples"
+	task :infer do
+		src = File.join(query_dir, "infer-1.sparql")
+		SparqlClient.construct(src)
 	end
 	
 	desc "Load RDF/Turtle into the triple store."
