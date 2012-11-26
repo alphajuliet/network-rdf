@@ -1,0 +1,9 @@
+# Render the standard page header
+
+div.header! do
+	img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
+	span do
+		a "network-rdf", :href => "/"
+	end
+end		
+

@@ -8,10 +8,7 @@ html do
 		script :type => "text/javascript", :src => "/script/network-rdf.js" do end
 	end
 	body do
-		div.header! do 
-			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
-			span "network-rdf"
-		end
+		markaby :page_header
 		div.main! do
 			h1 "Query"
 			p { a "All people and their organisation", :href => "/people/all" }

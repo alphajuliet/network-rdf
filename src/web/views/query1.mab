@@ -6,10 +6,7 @@ html do
 		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
 	end
 	body do
-		div.header! do 
-			img :src => "/image/sparql.jpg", :alt => "SPARQL logo"
-			span { a "network-rdf", :href => "/" }
-		end
+		markaby :page_header
 		div.main! do
 			p { "Found #{result.count} solutions."}
 			table do
