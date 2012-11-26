@@ -137,7 +137,17 @@ describe RDFAddressBook do
 			pattern [:p, RDF::FOAF.homepage, :page]
 		end
 		solutions = query.execute(@ab_test1.graph)
-		solutions.count.should eq(3)
+		solutions.count.should eq(2)
+		solutions.first[:page].to_s.should eq("http://jane.smith.name/")
+	end
+	
+	it "contains other pages" do
+		query = RDF::Query.new do
+			pattern [:p, RDF.type, RDF::FOAF.Person]
+			pattern [:p, RDF::FOAF.page, :page]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(1)
 		solutions.first[:page].to_s.should eq("http://www.example.org/")
 	end
 	

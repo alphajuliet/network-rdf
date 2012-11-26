@@ -74,14 +74,41 @@ module SparqlQueries
 	
 	def cmd_person_name
 		query(:query1) do
-			"SELECT ?mobile ?email
+			"SELECT DISTINCT ?prop ?value 
 			WHERE {
-				?p foaf:name \'#{params[:name]}\' .
-				?p gldp:card ?card .
-				OPTIONAL { ?card v:tel [ a v:cell; rdf:value ?mobile ] .}
-				OPTIONAL { ?card v:email [ a v:home; rdf:value ?email ] . }
+				?a foaf:name \'#{params[:name]}\'.
+				?a gldp:card ?card .
+			
+				{
+					?card ?prop ?o .
+					?o rdf:value ?value .
+				}
+				UNION {
+					?card ?prop [ v:locality ?value ] .
+				}
+				UNION {
+					?a ?prop [ foaf:accountName ?value ] .
+				}
+				UNION {
+					?a ?prop [ skos:prefLabel ?value ] .
+				}
+				UNION {
+					?a ?prop ?value .
+					FILTER isIRI (?value) .
+				}
+				UNION
+				{
+					?a ?prop [ a foaf:Person; foaf:name ?value ] .
+					FILTER (?prop = foaf:knows)					
+				}
+				UNION
+				{
+					?b foaf:name ?value .
+					?b ?prop ?a .
+					FILTER (?prop = foaf:knows)
+				}
 			}"
-		end		
+		end	
 	end
 	
 	def cmd_person_knows

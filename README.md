@@ -20,8 +20,10 @@ The mapping problem for relationships is twofold:
 Examples and desired output (assuming my standard prefixes):
 
 	URL;type=WORK;type=pref:http://www.example.org/
-	--> ajc:person-xxxx foaf:homepage <http://www.example.org/> .
+	--> ajc:person-xxxx foaf:page <http://www.example.org/> .
 
+	The above result is because we cannot detect type=WORK from the vCard gem.
+	
 	URL;type=HOME;type=pref:http://www.example.org/
 	--> ajc:person-xxxx foaf:homepage <http://www.example.org/> .
 

@@ -119,7 +119,7 @@ class RDFVCard < VCardEventer
 
 	def do_url(e)
 		if e.group.length == 0
-			property = RDF::FOAF.homepage
+			property = RDF::FOAF.page
 			@triples << [@subject, property, RDF::Vocabulary.expand_curie(e.value.uri)]
 		else
 			@group[e.group] = Hash.new if @group[e.group].nil?
