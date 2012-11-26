@@ -6,6 +6,13 @@
 	box-shadow: @d @d @d #ccc;
 }
 
+@heading-colour: #FF0066;
+.heading-style {
+	font-family: American Typewriter, Helvetica, Arial, sans-serif;
+	color: @heading-colour;
+	font-weight: normal;
+}
+
 @margin: 130px;
 
 body { 
@@ -20,7 +27,6 @@ body {
 }
 
 div#header {
-	@heading-colour: #FF0066;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -29,10 +35,9 @@ div#header {
 	padding: 10pt 10pt;
 	span { 
 		display: block;
-		font-family: American Typewriter;
+		.heading-style;
 		font-size: 12pt;
 		margin-top: 10pt;
-		color: @heading-colour;
 		a {
 			text-decoration: none;
 			color: @heading-colour;
@@ -51,6 +56,14 @@ div#main {
 	left: @margin;
 	margin: 10pt 0pt;
 	overflow: auto;
+	div {
+		border: 1px solid #ccc;
+		margin: 0 0 5pt 0;
+		padding: 5pt 10pt;
+		h1,h2,h3 {
+			.heading-style;
+		}
+	}
 }
 
 table { font-size: 9pt;
