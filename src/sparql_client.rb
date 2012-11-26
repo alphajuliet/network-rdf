@@ -11,20 +11,19 @@ require 'config'
 
 class SparqlClient
 	
-	def initialize(endpoint='http://localhost:8000/sparql/')
-		@client = SPARQL::Client.new(endpoint)
-		@prefixes = RDF.Prefixes(:sparql)
-	end
-	
-	def SparqlClient.select(query_file, format=:turtle)
+	def SparqlClient.select(query_file)
 		client = SPARQL::Client.new(MyConfig.get("sparql-endpoint"))
 		query = open(query_file).read
 		response = client.query(RDF.Prefixes(:sparql) + query)
-		output = []
 		response.each_solution do |solution|
-			solution.each_binding  { |name, value| output << value.to_s }
-		end				
-		output.join("\n")
+			output = []
+			solution.each_binding do |name, value|
+				p = value.to_s
+				p = "<#{p}>" if value.kind_of? RDF::URI
+				output << p
+			end
+			puts output.join(" ")
+		end
 	end
 
 	def SparqlClient.construct(query_file, format=:turtle)
@@ -49,6 +48,7 @@ class SparqlClient
 	
 end
 
+=begin
 if __FILE__ == $0
 	operation = :select
 	opts = OptionParser.new
@@ -57,5 +57,6 @@ if __FILE__ == $0
 	fname = opts.parse(*ARGV).first
 	SparqlClient.send(operation.to_s, fname)
 end
+=end
 
 # The End

@@ -18,7 +18,15 @@ html do
 					end
 					result.each_solution do |solution|
 						tr do
-							solution.each_binding { |name, value| td value.to_s }
+							solution.each_binding do |name, value| 
+								td do 
+									if value.kind_of? RDF::URI
+										a value.to_s, :href => value.to_s
+									else
+										value.to_s 
+									end
+								end
+							end
 						end
 					end
 				end
