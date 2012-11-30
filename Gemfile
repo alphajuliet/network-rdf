@@ -7,10 +7,10 @@ gem "rake"
 gem "rspec"
 
 # RDF and data
-gem "rdf", "0.3.9"
-gem "rdf-turtle", "0.3.0"
+gem "rdf", "0.3.11"
+gem "rdf-turtle", "0.3.1"
 gem "rdf-json", "0.3.0"
-gem "vcard", "0.1.1", :git => "https://github.com/qoobaa/vcard.git"
+gem "vcard", "0.2.0", :git => "https://github.com/qoobaa/vcard.git"
 gem "linkedin", "0.3.7"
 
 # Back end RDF store

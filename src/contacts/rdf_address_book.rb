@@ -27,7 +27,7 @@ class RDFAddressBook
 	#------------------------
 	# Read and convert contents to RDF
 	def read_vcards(filename)
-		@vcards = Vpim::Vcard.decode(File.open(filename))
+		@vcards = Vcard::Vcard.decode(File.open(filename))
 	end
 
 	def convert_to_rdf

@@ -8,9 +8,9 @@ GIT
 
 GIT
   remote: https://github.com/qoobaa/vcard.git
-  revision: 0594fee6fc56e4d6aae2785449940e09126d8160
+  revision: d69bd89732632d4e63137aebc4b21a6a9434228d
   specs:
-    vcard (0.1.1)
+    vcard (0.2.0)
 
 GEM
   remote: http://rubygems.org/
@@ -29,20 +29,20 @@ GEM
     markaby (0.7.2)
       builder (>= 2.0.0)
     mime-types (1.19)
-    multi_json (1.3.7)
+    multi_json (1.4.0)
     net-http-persistent (2.8)
     oauth (0.4.7)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
     rake (10.0.2)
-    rdf (0.3.9)
+    rdf (0.3.11)
       addressable (>= 2.2.6)
     rdf-json (0.3.0)
       json_pure (>= 1.4.2)
       rdf (~> 0.3.0)
-    rdf-turtle (0.3.0)
-      rdf (>= 0.3.4)
+    rdf-turtle (0.3.1)
+      rdf (>= 0.3.11)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.12.0)
@@ -75,12 +75,12 @@ DEPENDENCIES
   linkedin (= 0.3.7)
   markaby (= 0.7.2)
   rake
-  rdf (= 0.3.9)
+  rdf (= 0.3.11)
   rdf-json (= 0.3.0)
-  rdf-turtle (= 0.3.0)
+  rdf-turtle (= 0.3.1)
   rest-client (= 1.6.7)
   rspec
   sinatra (= 1.3.3)
   sparql-client (= 0.3.1)
   thin
-  vcard (= 0.1.1)!
+  vcard (= 0.2.0)!
