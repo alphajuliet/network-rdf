@@ -2,7 +2,6 @@
 
 module SparqlQueries
 
-	# Convert a solution to JSON format
 	def to_json(query_result)
 		array = []
 		query_result.each_solution do |solution|
@@ -13,11 +12,20 @@ module SparqlQueries
 		JSON.pretty_generate(array)
 	end	
 
-	# Do the SPARQL query and render on the given template, or return as JSON
-	def query(template=:query1, &block)
+	def query(&block)
 		client = SPARQL::Client.new(MyConfig.get('sparql-endpoint'))
 		query = yield
-		result = client.query(RDF.Prefixes(:sparql) + query)
+		client.query(RDF.Prefixes(:sparql) + query)
+	end
+	
+	def query_type(*types, &block)
+		h = Hash.new
+		h[:result] = query(&block)
+		h[:types] = types
+		h
+	end
+	
+	def render_on(template, result)
 		if request.accept.include?('text/html')
 			markaby template, :locals => { :result => result } 
 		elsif request.accept.include?('application/json')
@@ -25,8 +33,14 @@ module SparqlQueries
 		end
 	end
 	
+	def query_and_render_on(template, &block)
+		render_on(template, query(&block))
+	end
+	
+	#----------------------------------------
+	# All the specific SPARQL queries
 	def cmd_people_names
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT ?name
 			WHERE {
 				?p a foaf:Person .
@@ -37,7 +51,7 @@ module SparqlQueries
 	end
 	
 	def cmd_people_all
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT ?name ?orgname ?mobile ?email
 			WHERE {
 				?m a org:Membership .
@@ -53,7 +67,7 @@ module SparqlQueries
 	end
 
 	def cmd_people_at_orgname
-		query(:query1) do 
+		query_and_render_on(:query1) do 
 			"SELECT ?name ?mobile
 			WHERE {
 				?m a org:Membership .
@@ -73,12 +87,11 @@ module SparqlQueries
 	end
 	
 	def cmd_person_name
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT DISTINCT ?prop ?value 
 			WHERE {
 				?a foaf:name \'#{params[:name]}\'.
 				?a gldp:card ?card .
-			
 				{
 					?card ?prop ?o .
 					?o rdf:value ?value .
@@ -111,8 +124,39 @@ module SparqlQueries
 		end	
 	end
 	
+	def cmd_person_name1
+		results = []
+		results << query do
+			"SELECT DISTINCT ?prop ?value 
+			WHERE {
+				?a foaf:name \'#{params[:name]}\'.
+				?a gldp:card ?card .
+				?card ?prop ?o .
+				?o rdf:value ?value .
+			}"
+		end
+		results << query do
+			"SELECT DISTINCT ?prop ?value
+			WHERE {
+				?a foaf:name \'#{params[:name]}\'.
+				?a gldp:card ?card .
+				?card ?prop [ v:locality ?value ] .
+			}"
+		end
+		results << query do
+			"SELECT DISTINCT ?prop ?value
+			WHERE {
+				?a foaf:name \'#{params[:name]}\'.
+				?a gldp:card ?card .
+				?a ?prop [ foaf:accountName ?value ] .
+			}"
+		end
+		
+		render_on(:person, results)
+	end
+	
 	def cmd_person_knows
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT DISTINCT ?name 
 			WHERE {
 				{
@@ -130,7 +174,7 @@ module SparqlQueries
 	
 	def cmd_org_count_by_person
 		min = params["min"] || 0;
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT ?orgname (COUNT (?p) AS ?members)
 			WHERE {
 				?m a org:Membership .
@@ -145,7 +189,7 @@ module SparqlQueries
 	end
 	
 	def cmd_people_knows
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT ?source ?target
 			WHERE {
 				?a foaf:name ?source .
@@ -155,7 +199,7 @@ module SparqlQueries
 	end
 	
 	def cmd_no_email
-		query(:query1) do
+		query_and_render_on(:query1) do
 			"SELECT ?name 
 			WHERE {
 				?card a v:VCard ;

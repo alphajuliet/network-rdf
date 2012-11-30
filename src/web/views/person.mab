@@ -1,0 +1,36 @@
+# Query result template
+html do
+	head do
+		title "network-rdf: query"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
+		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
+	end
+	body do
+		markaby :page_header
+		div.main! do
+			table do
+				tbody do
+					tr do
+						result.variable_names.each do |name|
+							th name.to_s.capitalize
+						end
+					end
+					result.each_solution do |solution|
+						tr do
+							solution.each_binding do |name, value| 
+								td do 
+									if value.kind_of? RDF::URI
+										a value.to_s, :href => value.to_s
+									else
+										value.to_s 
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
