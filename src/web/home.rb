@@ -37,11 +37,7 @@ def render_on(template, result=nil)
 	if request.accept.include?('text/html')
 		markaby template, :locals => { :result => result } 
 	elsif request.accept.include?('application/json')
-		unless result.nil?
-			to_json(result)
-		else
-			
-		end
+		to_json(result) unless result.nil?
 	end
 end
 
