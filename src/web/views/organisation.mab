@@ -1,0 +1,29 @@
+# Query result template
+html do
+	head do
+		title "network-rdf: query"
+		link :type => "text/css", :rel => "stylesheet/less", :href => "/css/network.less"
+		script :type => "text/javascript", :src => "/script/less-1.3.1.min.js" do end
+	end
+	body do
+		markaby :page_header
+		div.main! do
+			h2 "#{params[:orgname]}"
+			result = cmd_org_people
+			table do
+				tbody do
+					result.each_solution do |solution|
+						tr do
+							solution.each_binding do |name, value|
+								td do 
+									a value.to_s, :href => "/person/#{value.to_s}"
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+

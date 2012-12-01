@@ -1,0 +1,16 @@
+# Partial view of a person's foaf:knows details
+
+h2 "Circle"
+table do
+	tbody do
+		result.each_solution do |solution|
+			tr do
+				solution.each_binding do |name, value| 
+					td do 
+						a value.to_s, :href => "/person/#{value.to_s}"
+					end
+				end
+			end
+		end
+	end
+end

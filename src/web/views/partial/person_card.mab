@@ -1,0 +1,25 @@
+# Partial view of a person's card details
+
+h2 "Card details"
+table do
+	tbody do
+		tr do
+			result.variable_names.each do |name|
+				th name.to_s.capitalize
+			end
+		end
+		result.each_solution do |solution|
+			tr do
+				solution.each_binding do |name, value| 
+					td do 
+						if value.kind_of? RDF::URI
+							a value.to_s, :href => value.to_s
+						else
+							value.to_s 
+						end
+					end
+				end
+			end
+		end
+	end
+end

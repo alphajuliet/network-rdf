@@ -12,21 +12,19 @@ html do
 		div.main! do
 			div.query! do
 				h1 "Query"
-				p { a "All people and their organisation", :href => "/people/all" }
 				p { a "Names of all people", :href => "/people/names" }
 				p { a "Who knows who", :href => "/people/knows" }
 				p { a "Contacts with no email address", :href => "/no-email" }
 				p { a "Organisations by people count", :href => "/org/count_by_person" }
 				p do
-					span "Person details: "
-					input :type => "text", :name => "person1", :value => "Andrew Joyner"
-					input :type => "button", :id => "cmd_person_details", :value => "Details"
-					input :type => "button", :id => "cmd_person_knows", :value => "Knows"
+					span "Person: "
+					input :type => "text", :name => "person1", :value => "Jane Smith"
+					input :type => "button", :id => "cmd_person_all", :value => "Details"
 				end
 				p do
-					span "People at company: "
+					span "Organisation: "
 					input :type => "text", :name => "org1", :value => "Unico"
-					input :type => "button", :id => "cmd_people_at", :value => "Go"
+					input :type => "button", :id => "cmd_org_people", :value => "People"
 				end			
 			end
 			div.visualise! do

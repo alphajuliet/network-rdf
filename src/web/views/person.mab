@@ -8,28 +8,9 @@ html do
 	body do
 		markaby :page_header
 		div.main! do
-			table do
-				tbody do
-					tr do
-						result.variable_names.each do |name|
-							th name.to_s.capitalize
-						end
-					end
-					result.each_solution do |solution|
-						tr do
-							solution.each_binding do |name, value| 
-								td do 
-									if value.kind_of? RDF::URI
-										a value.to_s, :href => value.to_s
-									else
-										value.to_s 
-									end
-								end
-							end
-						end
-					end
-				end
-			end
+			markaby :person_card, 	:locals => {:result => cmd_person_card}
+			markaby :person_org, 		:locals => {:result => cmd_person_org}
+			markaby :person_knows, 	:locals => {:result => cmd_person_knows}
 		end
 	end
 end

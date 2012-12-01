@@ -11,12 +11,15 @@ function main() {
 	$("input#cmd_person_knows").click(function () {
 			window.location = server + "person/" + $("input[name=person1]").val() + "/knows";
 	});
-	
-	$("input#cmd_people_at").click(function () {
-			window.location = server + "people/at/" + $("input[name=org1]").val();
+
+	$("input#cmd_person_all").click(function () {
+			window.location = server + "person/" + $("input[name=person1]").val();
 	});
 
-	
+	$("input#cmd_org_people").click(function () {
+			window.location = server + "org/" + $("input[name=org1]").val() + "/people";
+	});
+
 }
 
 $(document).ready(function() {
