@@ -20,6 +20,7 @@ get '/people/knows'							do cmd_people_knows end
 get '/people/at/:orgname' 			do cmd_people_at_orgname end
 get '/person/:name' 						do cmd_person_name end
 get '/person/:name/knows'				do cmd_person_knows end
+get '/person/:name/card'				do cmd_person_card end
 get '/org/count_by_person' 			do cmd_org_count_by_person end
 get '/no-email' 								do cmd_no_email end
 get '/viz/org/count_by_person'	do markaby :viz1 end

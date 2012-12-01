@@ -172,6 +172,23 @@ module SparqlQueries
 		end
 	end
 	
+	def cmd_person_card
+		query_and_render_on(:query1) do
+			"SELECT ?prop ?value
+			WHERE {
+				?a foaf:name \'#{params[:name]}\'.
+				?a gldp:card ?card .
+				{
+					?card ?prop [ rdf:value ?value ] .
+				}
+				UNION 
+				{ 
+					?card ?prop [ v:locality ?value ] .
+				}
+			}"
+		end
+	end
+	
 	def cmd_org_count_by_person
 		min = params["min"] || 0;
 		query_and_render_on(:query1) do
