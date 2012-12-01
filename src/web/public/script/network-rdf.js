@@ -4,14 +4,6 @@
 var server = "";
 
 function main() {
-	$("input#cmd_person_details").click(function () {
-			window.location = server + "person/" + $("input[name=person1]").val() + "/card";
-	});
-	
-	$("input#cmd_person_knows").click(function () {
-			window.location = server + "person/" + $("input[name=person1]").val() + "/knows";
-	});
-
 	$("input#cmd_person_all").click(function () {
 			window.location = server + "person/" + $("input[name=person1]").val();
 	});
