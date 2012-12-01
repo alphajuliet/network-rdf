@@ -7,7 +7,6 @@ module AdminQueries
 		repo_api = "http://#{api_key}@api.dydra.com/"
 		response = RestClient.get repo_api + "alphajuliet/network-rdf/meta", :accept => "application/json"
 		@data = JSON.parse(response.to_str)
-		markaby :repo
 	end
 
 end

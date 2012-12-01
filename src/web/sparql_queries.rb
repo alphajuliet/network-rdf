@@ -25,22 +25,6 @@ module SparqlQueries
 		end
 	end
 	
-	def cmd_people_all
-		query do
-			"SELECT ?name ?orgname ?mobile ?email
-			WHERE {
-				?m a org:Membership .
-				?m org:organization [ skos:prefLabel ?orgname ] .
-				?m org:member ?p .
-				?p foaf:name ?name .
-				?p gldp:card ?card .
-				OPTIONAL { ?card v:tel [ a v:cell; rdf:value ?mobile ] .}
-				OPTIONAL { ?card v:email [ a v:home; rdf:value ?email ] . }
-			}
-			ORDER BY ?name"
-		end 
-	end
-
 	def cmd_org_people
 		query do 
 			"SELECT ?name
