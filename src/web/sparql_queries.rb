@@ -67,6 +67,15 @@ module SparqlQueries
 				{ 
 					?card ?property [ v:locality ?value ] .
 				}
+				UNION
+				{
+					?a ?property [ foaf:accountName ?value ] .
+				}
+				UNION
+				{
+					?a ?property ?value .
+					FILTER isIRI(?value)
+				}
 			}"
 		end
 	end

@@ -1,11 +1,12 @@
 # Partial of an organisation using /org/:orgname/people
 
-h2 "Organisation"
-result.each_solution do |solution|
-	solution.each_binding do |name, value|
-		p do 
-			a value.to_s, :href => "/org/#{value.to_s}/people"
+if result.count > 0
+	h2 "Organisation"
+	result.each_solution do |solution|
+		solution.each_binding do |name, value|
+			p do 
+				a value.to_s, :href => "/org/#{value.to_s}/people"
+			end
 		end
 	end
-end
- 
+end 
