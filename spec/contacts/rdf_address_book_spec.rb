@@ -151,8 +151,8 @@ describe RDFAddressBook do
 		solutions.first[:page].to_s.should eq("http://www.example.org/")
 	end
 	
-	it "prints out the RDF" do
-		puts @ab_test1.to_turtle
+	it "records the RDF" do
+		@ab_test1.write_as_turtle(File.join(data_dir, "contacts-test1.ttl"))
 	end
 	
 end
