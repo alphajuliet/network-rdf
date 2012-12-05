@@ -1,5 +1,6 @@
 # Ignore the cache and data folders
-cache
-data
+cache/
+data/
 !data/contacts-test1.vcf
-examples
+examples/
+*.html

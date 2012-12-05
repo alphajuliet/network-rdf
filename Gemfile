@@ -19,6 +19,7 @@ gem 'dydra', :git => 'git://github.com/dydra/dydra.git'
 # SPARQL
 gem "rest-client", "1.6.7"
 gem "sparql-client", "0.3.1"
+gem "terminal-table"
 
 # Web front end
 gem "sinatra", "1.3.3"

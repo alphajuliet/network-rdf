@@ -1,6 +1,20 @@
 # network-rdf
 
-Adventures in RDF and social connections with Ruby.
+Adventures in RDF, cloud, and social connections with Ruby.
+
+# Discussion
+
+A discussion of the work to date is covered in the blog post [Semantic Scratchings][blog1]. It basically converts your annotated contacts into RDF, uploads it to a triple store, and implements a simple front-end to query and view the data, including a couple of simple visualisations.
+
+The graph of an example contact in the store looks like the image below. There will often be additional custom RDF annotations or relationships added by the user.
+
+<img src="doc/example-graph.png" width="640" />
+
+The end-to-end process for delivering information to the user is shown in the following model. The raw contacts data traverses a number of steps and formats on its journey to the browser, but the process is well decoupled through standard interfaces and formats.
+
+<img src="doc/entity-model.png" width="640" />
+
+[blog1]: http://alphajuliet.posterous.com/semantic-scratchings
 
 # Activity
 

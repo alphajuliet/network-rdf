@@ -1,0 +1,247 @@
+Title: Semantic Scratchings
+Author: AndrewJ
+Date: 2012-11-24
+
+# Semantic Scratchings
+
+Over the last few weeks, while I've had some time to myself, I've been scratching an itch by going deeper into [semantic web][] technologies with an exploratory project of sorts. I guess it's paying off in that it's raising as many questions as it answers, and it's also giving me some in-my-own-head street cred by both getting down dirty with writing, building, and deploying code, and thinking about things like ontologies and formal knowledge capture. If that floats your boat, read on. It's a long entry.
+
+## Background
+
+I won't go into the nature of the itch; the scratching is always more interesting. I've been using sem-web tools to get a handle on my address book. It's always annoyed me how siloed that information is, and how much the data could be augmented and improved by linking it with other data, both public and private. The same problem on a much larger scale has provoked the rise of the [Linked Data][] movement. I credit a large part of inspiration for my little project from Norm Walsh's [paper](http://nwalsh.com/docs/articles/extreme2002/) from 2002 and related [blog posts](http://norman.walsh.name/2005/11/25/contacts).
+
+[Semantic Web]: http://en.wikipedia.org/wiki/Semantic_Web
+[Linked Data]: http://linkeddata.org
+
+It's a journey, possibly without end, but I'll describe a little about where I've been, with some technical detail where useful. I'll throw in links for the less familiar. Ask me if you want more detail.
+
+It goes without saying that the organisations that hold your contact information, like Google, LinkedIn, and Facebook are building this sort stuff anyway, whether it's using semantic web or not. Even if I wanted to, there's unlikely to be a web startup in this.
+
+## So Far
+
+To date I've built three main building blocks that do the following:
+
+1. Perform an [extract-transform-load][ETL] from my OSX Contacts app into [RDF][] triples. 
+2. Load the triples into a cloud-based RDF [triple store][].
+3. Run queries on the triple store using a web front end.
+
+None of this is in itself even remotely revolutionary or exciting in the regular IT world, and the sem-web people have been doing it for years too. A triple store is just a specialised [graph database][], one of the many [NoSQL][] entrants. It's just that I've just chosen to hand-build some of the pieces, learning as I go.
+
+[ETL]: http://en.wikipedia.org/wiki/Extract,_transform,_load
+[RDF]: http://en.wikipedia.org/wiki/Resource_Description_Framework
+[triple store]: http://en.wikipedia.org/wiki/Triple_store
+[graph database]: http://en.wikipedia.org/wiki/Graph_database
+[NoSQL]: http://nosql-database.org/
+
+## Implementation
+
+First a word on implementation language. I really wanted to do this in [Clojure][] because its elegance and scalability should complement RDF. Sadly, the tools weren't as mature as I would have liked, and my Clojure skills weren't up to developing them myself, although [others](http://tech.puredanger.com/2010/06/24/using-clojure-and-clj-plaza-to-play-with-rdf-data/) have shown the way. I considered using [Node.js][] but again, I didn't feel that there wasn't enough there to work with. Not so with my old friend [Ruby][], where there are a wealth of useful libraries, and it's a language I'm competent (but not expert) in, and encourages fast development. I also get to use [RSpec][] and [Rake][]. For a worked example, see [Jeni Tennison's post][jeni1] on using [4store][] and [RDF.rb][].
+
+[Clojure]: http://clojure.org/
+[Node.js]: http://nodejs.org/
+[Ruby]: http://www.ruby-lang.org/
+[RSpec]: http://rspec.info/
+[Rake]: http://rake.rubyforge.org/
+
+## ETL
+
+The ETL step uses a simple [AppleScript][] to extract my Contacts app database into a single [vCard][] file. I could use a Ruby Cocoa library to access it, but this was quick and easy. Moreover, vCard is a standard, so anything source data I can get in vCard format should be consumable from this step on.
+
+The question was then how to transform this information about people into RDF. [FOAF][] as a vocabulary doesn't cut it on its own. Luckily, the W3C has already addressed this in their [draft paper][vocab-people], and have a reference model (see image below). It leverages heavily off some well-known vocabularies: [FOAF][], [ORG][], [SKOS][], and [vCard in RDF][].
+
+<img alt="People Example" src="http://www.w3.org/TR/vocab-people/img/people-example.png" width="480px" />
+
+There's also a [big version](http://www.w3.org/TR/vocab-people/img/people-example-big.png). 
+
+[AppleScript]: http://en.wikipedia.org/wiki/Applescript
+[vCard]: http://en.wikipedia.org/wiki/Vcard
+[vocab-people]: http://www.w3.org/TR/vocab-people/
+[FOAF]: http://xmlns.com/foaf/spec/
+[ORG]: http://www.w3.org/ns/org#
+[SKOS]: http://www.w3.org/2004/02/skos/
+[vCard in RDF]: http://www.w3.org/TR/vcard-rdf/
+
+I wrote a Ruby class to iterate through the vCard entries in the exported file and assemble the graph shown above using the excellent [RDF.rb][] library, generating nodes and edges on the fly. These were pulled into an RDF graph in memory and then dumped out to a file of triples in the [Turtle][] format. This can take some time: well over a minute on my [i5][] MacBook Pro grinding through nearly 300 contacts. It currently generates around 7000 triples (an average of 23 per contact).
+
+An entry for an example contact currently looks like this in [Turtle][]:
+
+	@prefix : <http://alphajuliet.com/ns/contact#> .
+	@prefix db: <http://dbpedia.org/resource/> .
+	@prefix dbo: <http://dbpedia.org/ontology/> .
+	@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+	@prefix gldp: <http://www.w3.org/ns/people#> .
+	@prefix net: <http://alphajuliet.com/ns/ont/network#> .
+	@prefix org: <http://www.w3.org/ns/org#> .
+	@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+	@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+	@prefix v: <http://www.w3.org/2006/vcard/ns#> .
+	
+	:m254028 a org:Membership;
+		 org:member :person-6D9E0CBF-C599-4BEC-8C01-B1B699914D04;
+		 org:organization :org-example-corporation;
+		 org:role [ a org:Role;
+			 skos:prefLabel "CTO"] .
+	
+	:org-example-corporation a org:Organization;
+		 skos:prefLabel "Example Corporation" .
+	
+	:person-6D9E0CBF-C599-4BEC-8C01-B1B699914D04 a foaf:Person;
+		 net:workedAt [ a org:Organization;
+			 skos:prefLabel "Oracle Australia"];
+		 dbo:team db:Geelong_football_club;
+		 gldp:card [ a v:VCard;
+			 v:adr [ a v:work;
+				 v:country "Australia";
+				 v:locality "Sydney"];
+			 v:email [ a v:work;
+				 rdf:value "jane.smith@example.org"],
+				 [ a v:home;
+				 rdf:value "jane.smith12345@gmail.com"];
+			 v:fn "Jane Smith";
+			 v:note "Met at Oracle";
+			 v:tel [ a v:cell;
+				 rdf:value "+61 412 345 678"],
+				 [ a v:work;
+				 rdf:value "+61 2 9876 5432"]];
+		 foaf:account [ a foaf:OnlineAccount;
+			 foaf:accountName <http://www.linkedin.com/in/janesmith12345>],
+			 [ a foaf:OnlineAccount;
+			 foaf:accountName <http://twitter.com/janesmith12345>];
+		 foaf:homepage <http://www.example.org/>,
+			 <http://jane.smith.name/>,
+			 <http://www.example.org/janesmith/profile>;
+		 foaf:knows [ a foaf:Person;
+			 foaf:name "John Smith"],
+			 [ a foaf:Person;
+			 foaf:name "Marcus Smith"],
+			 [ a foaf:Person;
+			 foaf:name "Alice Jones"];
+		 foaf:name "Jane Smith" .
+
+The UUID in the `foaf:Person` node is generated and retained by the Contacts app, so I have a guaranteed ID over the lifetime of the contact.
+
+[RDF.rb]: http://rdf.rubyforge.org
+[Turtle]: http://www.w3.org/TR/turtle/
+[i5]: http://www.intel.com/content/www/us/en/processors/core/core-i5-processor.html
+
+Because of the stream processing of the vCard entries, there is no way of setting up inferred relationships between existing items of data on the first pass, such as identifying explicitly that I know all my contacts. Fortunately, that's what SPARQL is good at, so I use the following slightly awkward query:
+
+	CONSTRUCT {
+		?a foaf:knows ?b .
+	} 
+	WHERE {
+		?a a foaf:Person .
+		?a foaf:name "Andrew Joyner" ; 
+			gldp:card ?c1 .
+		?b a foaf:Person ; 
+			gldp:card ?c2 .
+	}
+
+This generates a set of inferred triples that I can add into the main graph.
+
+## Import
+
+I was using a local version of [4store][] up until very recently. It's a no-fuss, solid, and open-source triple store with REST and SPARQL endpoints. However, I am doing development across different computers via Dropbox, and I wanted to centralise the data. One option would have been to set up an instance of 4store or maybe [stardog][] on Amazon's [magic cloud][AWS]. Fortunately, there is a new cloud triple store called [Dydra][] that keeps it very simple, and I was kindly given a private beta account with some free storage.
+
+Currently I'm manually clearing and adding the entire graph each time it gets updated, but that's ok while it's in development. Eventually, this will be scripted through the Dydra Ruby API gem.
+
+[4store]: http://4store.org/
+[stardog]: http://stardog.com/
+[Dydra]: http://dydra.com/
+[AWS]: http://aws.amazon.com
+
+# Web Query
+
+The core of querying an RDF store is [SPARQL][], which is as SQL is to relational databases. It even looks similar. I've set up a localhost front end using [Sinatra][], [Markaby][] and a Ruby [SPARQL client][] to apply queries, some with user inputs, to return "interesting facts", like:
+
+* List all the organisations and how many contacts work for them, shown as a line chart using the [D3][] Javascript visualisation library.
+* List who knows who across the graph.
+* Display a D3 "force" graph of my network based on foaf:knows relationships (that's me at the centre of the universe)
+
+<img src="http://alphajuliet.com/images/ref/viz2-2012-11-24.png" alt="foaf:knows graph" width="400"/>
+
+* Who are all the people in a person's circle, i.e. the subject and object of a `foaf:knows` predicate
+* Who works at a given company and their mobile number
+* Who don't I have an email address for?
+
+As I said, fascinating. It's very basic but it's a start. I want to start visualising more information with [D3][], such as the broader social networks.
+
+As a matter of style, I'm applying actual SPARQL queries rather than using a pure Ruby approach that `sparql_client` encourages. It just seems to replace one format with another without adding any useful abstraction.
+
+[SPARQL]: http://www.w3.org/TR/sparql11-query/
+[Sinatra]: http://www.sinatrarb.com/
+[SPARQL client]: https://github.com/bendiken/sparql-client
+[Markaby]: http://markaby.rubyforge.org
+[D3]: http://d3js.org 
+
+## Deployment
+
+I'm managing the code under [Git][], and I've deployed the code base onto [Heroku][], both as a cloud education exercise, and so I can access it everywhere. However, because it contains personal contact data, I can't make it public.
+
+[Git]: http://git-scm.com/
+[Heroku]:http://www.heroku.com/
+
+## Data model
+
+Being an organised person, I've filled in a number of the relationships in Contacts to reflect spouses, friends, children, pets, and so on. These all get mapped using a triple such as `ajc:person-xxxx foaf:knows [ a foaf:Person; foaf:name "John Smith" ] .`. The square brackets result in a blank node that can to be linked up later to the actual person based on inference rules. I don't want to assume at this stage that there is only one "John Smith" in my address book. I know three Steve Wilsons for example.
+
+Along the lines of Norm Walsh's approach, I've also added "custom" relationships such as `foaf:knows` and `net:workedAt`, which get mapped into a set of triples during the transform process. 
+
+I've also played with adding my own RDF triples explicitly as notes in my contract entries, to give maximum flexibility. I use the format `rdf: { ... }` to enclose a series of [Turtle][] triples, using my standard RDF prefixes, and transform them into real triples.
+
+I've started an ontology to capture entities and relationships that don't seem to exist elsewhere or are too complex for my needs. One example is to capture where someone worked before, using a `net:workedAt` property to map from `foaf:Person` to `org:Organization`. It highlights a major question in my mind around provenance and versioning of information (see next section).
+
+## Provenance and versioning
+
+Clearly, one of the potential shortcomings of the system so far is that the quality of the data is determined by my efforts to keep my address book accurate and up to date. I did take some steps to pull in data from my LinkedIn connections, but quickly hit the API transaction limit in trying to pull down all the info on my nearly 600 connections, so it's on hold for now. I do fantasise about LinkedIn (and Facebook) having a SPARQL endpoint on their data, but I suspect *they* would rather be at the centre of my social network, and not my little triple store.
+
+Assuming that I did import contact data from LinkedIn and Facebook, where people manage their own contact details. I'd want to capture the source or provenance of that information, so I could decide the level of trust I should place in it, and resolve conflicts. Of course, there's a W3C [Provenance][] vocabulary for expressing that. The bigger question is how to capture the dynamic nature of the data over time. A person works for this company this month, and that company next month; how do I best capture both bits of information? The Provenance ontology provides a basis for capturing that in terms of a validity duration of a triple, but not necessarily at a single point in time, like a snapshot. I'd like to say, for example: "this triple is valid right now", and then change it in the future, and say the same thing at a later time. It's not as precise as a duration, but I may neither have start *and* end date, nor care. 
+
+[Provenance]: http://www.w3.org/TR/prov-primer/ 
+
+## Updating triples
+
+Another question is around the mechanics of updating triples. At the moment I clear the store and do a full ETL from Contacts each time, but that's clearly not workable longer-term. If something changes, I want to be able to insert a new triple and appropriately handle the old one by deleting it, changing it, or adding additional triples to resolve any conflict. That requires me to know what triples are already there. I can see an involved solution requiring me to query the existing store for relevant triples, determine the steps to do the update, and then apply the updates to the store. The SPARQL Update spec provides for conditional deletes but I need to work it through to see how to do it. There's a parallel here to the problem of maintaining referential integrity in a relational database.
+
+Of course, these are all very answerable questions, I just haven't got there yet or seen existing solutions. Updates in later posts.
+
+## Future work
+
+It's still developing, and a long way off being useful. There's also a bunch of related technologies I want to play with over time. Amongst the backlog, in no particular order...
+
+* Add some more useful queries and visualisations
+* Include hyperlinks in the returned data so I can start browsing it
+* Link to information in public stores such as [DBpedia][], i.e., real Linked Data
+* Set up a continuous deployment chain using VMs and [Puppet][], maybe on [AWS][] for fun
+* Import LinkedIn connection data
+* Add provenance metadata with [PROV][]
+* Add more specific contact relationship information with the [REL][] vocabulary
+* Leverage other ontologies such as [schema.org][] and [NEPOMUK][]
+* Look at using reasoners or inference engines, such as [Pellet][] or [EulerSharp][]
+
+[Puppet]: http://puppetlabs.com/puppet/puppet-open-source/
+[Github]: http://github.com
+[REST]: http://en.wikipedia.org/wiki/Representational_state_transfer
+[REL]: http://vocab.org/relationship/.html
+[DBpedia]: http://dbpedia.org/
+[schema.org]: http://schema.org/
+[NEPOMUK]: http://www.semanticdesktop.org/ontologies/
+[Pellet]: http://clarkparsia.com/pellet
+[EulerSharp]: http://eulersharp.sourceforge.net/
+
+## References
+
+Apart from all the links, a few good pointers for learning more.
+
+* [Semantic Web for the Working Ontologist (Second Edition)][swwo] by Allemang and Hendler. In particular, it has an excellent explanation and examples on SPARQL and inference.
+* [Getting started with RDF and SPARQL using 4store and RDF.rb][jeni1] by Jeni Tennison.
+* [Using "Punning" to answer httpRange-14][punning] by Jeni Tennison. A very lucid explanation of the discussion around using URIs to identify things.
+* [SPIN - SPARQL Inferencing Notation][SPIN]. Spec on expressing inferences using SPARQL.
+* [Linked Open Vocabularies][lov]. Existing vocabularies for expressing and linking data.
+
+[swwo]: http://www.amazon.com/Semantic-Web-Working-Ontologist-Effective/dp/0123735564/
+[jeni1]: http://www.jenitennison.com/blog/node/152
+[punning]: http://www.jenitennison.com/blog/node/170
+[SPIN]: http://spinrdf.org/
+[lov]: http://labs.mondeca.com/dataset/lov/
+

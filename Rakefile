@@ -22,15 +22,10 @@ web_dir = File.expand_path(File.join(here, "src", "web"))
 
 contacts_vcf = File.join(data_dir, "contacts-#{today}.vcf")
 contacts_ttl = File.join(data_dir, "contacts-#{today}.ttl")
+inferred_ttl = File.join(data_dir, "inferred-#{today}.ttl")
 
 RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
-
-#----------------
-desc "Make sure the gems are up to date."
-task :check do
-	sh 'bundle install'
-end
 
 #----------------
 namespace :contacts do
@@ -51,16 +46,22 @@ namespace :contacts do
 		ab.write_as_turtle(contacts_ttl)
 	end
 	
-	desc "Generate inferred triples"
+	desc "Generate inferred triples from repository"
 	task :infer do
-		src = File.join(query_dir, "infer-1.sparql")
-		SparqlClient.construct(src)
+		puts "# Generating #{inferred_ttl}"
+		File.open(inferred_ttl, "w") do |out|
+			Dir.glob(File.join(query_dir, "infer*.sparql")) do |src|
+				puts "# Running query in #{src}"
+				out.write(SparqlClient.construct(src))
+			end
+		end
 	end
 	
-	desc "Load RDF/Turtle into the triple store."
+	desc "Load all RDF statements into the triple store."
 	task :load do
 		# Files to load
-		files = ["statements-1.ttl", "contacts-#{today}.ttl", "inferences.ttl"]
+		files = Dir.glob(File.join("data", "statements*.ttl"))
+		files.push(contacts_ttl, inferred_ttl)
 		graph    = 'http://alphajuliet.com/ns/network-rdf'
 		endpoint = MyConfig.get('repo-endpoint')
 		
@@ -81,7 +82,7 @@ namespace :contacts do
 	end
 	
 	desc "Export, transform, and load contact info into the triple store."
-	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load']
+	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:infer', 'contacts:load']
 
 end
 
@@ -183,7 +184,7 @@ end
 #----------------
 # Various other tasks
 
-desc "Print out all the prefixes"
+desc "Print out all my prefixes in RDF/Turtle format"
 task :prefixes do
 	require 'my_prefixes'
 	puts RDF.Prefixes(:sparql)
@@ -191,18 +192,18 @@ end
 
 #----------------
 namespace :sparql do
-	desc "Run a local SPARQL select query"
+	desc "Run a SPARQL select query"
 	task :select, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "# Run examples/#{src}"
-		SparqlClient.select(src)
+		puts "# Running query in #{src}"
+		puts SparqlClient.select(src)
 	end
 	
-	desc "Run a local SPARQL construct query"
+	desc "Run a SPARQL construct query"
 	task :construct, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "# Run examples/#{src}"
-		SparqlClient.construct(src)
+		puts "# Running query in #{src}"
+		puts SparqlClient.construct(src)
 	end
 end
 # The End
