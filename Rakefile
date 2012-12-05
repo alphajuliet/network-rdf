@@ -32,6 +32,7 @@ namespace :contacts do
 
 	desc "Export all my contacts."
 	task :export do
+		puts "# Exporting contact data"
 		sh "osascript src/contacts/export-all-contacts.scpt"
 		source_dir = File.join(ENV["HOME"], "Downloads")
 		FileUtils.mv(File.join(source_dir, "contacts.vcf"), contacts_vcf)
@@ -39,16 +40,17 @@ namespace :contacts do
 	
 	desc "Generate RDF/Turtle from the contacts VCard file."
 	task :turtle => :export do
+		puts "# Generating RDF and writing to #{contacts_ttl}"
 		require 'contacts/rdf_address_book'	
-		puts "Writing to #{contacts_ttl}"
 		ab = RDFAddressBook.new_from_file(contacts_vcf)
 		ab.convert_to_rdf
 		ab.write_as_turtle(contacts_ttl)
 	end
 	
 	desc "Generate inferred triples from repository"
+	# This should only be run after the asserted statements have been uploaded, because it needs to make queries against _those_ statements.
 	task :infer do
-		puts "# Generating #{inferred_ttl}"
+		puts "# Generating inferred statements and writing to #{inferred_ttl}"
 		File.open(inferred_ttl, "w") do |out|
 			Dir.glob(File.join(query_dir, "infer*.sparql")) do |src|
 				puts "# Running query in #{src}"
@@ -57,14 +59,13 @@ namespace :contacts do
 		end
 	end
 	
-	desc "Load all RDF statements into the triple store."
+	desc "Load all asserted RDF statements into the triple store."
 	task :load do
 		# Files to load
 		files = Dir.glob(File.join("data", "statements*.ttl"))
-		files.push(contacts_ttl, inferred_ttl)
+		files.push(contacts_ttl)
 		graph    = 'http://alphajuliet.com/ns/network-rdf'
 		endpoint = MyConfig.get('repo-endpoint')
-		
 		files.each do |fname|
 			filename = File.join(data_dir, fname)
 			puts "Loading #{filename} into #{graph} in 4store"
@@ -82,7 +83,7 @@ namespace :contacts do
 	end
 	
 	desc "Export, transform, and load contact info into the triple store."
-	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:infer', 'contacts:load']
+	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load', 'contacts:infer']
 
 end
 
