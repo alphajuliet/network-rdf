@@ -8,6 +8,15 @@ module SparqlQueries
 		client.query(RDF.Prefixes(:sparql) + query)
 	end
 
+	def query_json(&block)
+		query = yield
+		puts query
+		response = RestClient.get MyConfig.get('sparql-endpoint'), 
+				:accept => 'application/sparql-results+json', 
+				:params => { :query => RDF.Prefixes(:sparql) << query }
+		response		
+	end
+	
 	def query_and_render_on(template, &block)
 		render_on(template, query(&block))
 	end
