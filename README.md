@@ -16,6 +16,41 @@ The end-to-end process for delivering information to the user is shown in the fo
 
 [blog1]: http://alphajuliet.posterous.com/semantic-scratchings
 
+# Requirements
+
+The following requirements must be met:
+
+* OSX (I'm on 10.8 but earlier versions may work) 
+* Your address book is stored in the Contacts app. I use annotations to store additional RDF information, generally as relationships, e.g. `spouse | John Smith`, `foaf:knows | Alice Jones`, and `net:workedAt | Example Corporation`
+* Ruby 1.9.3 (1.9.2 may also work, I haven't tried)
+* An account on Dydra. Or you'll need to set up the API to talk to another triple store accessible via SPARQL endpoint and a web-services API. This can of course be local.
+
+You may also want to:
+
+* Use rvm to manage Ruby versions and gemsets.
+
+# Setup
+
+* `$ bundle install`
+* `$ rvm use 1.9.3`
+* Update `config.yaml` with your entries. The key one is the SPARQL endpoint.
+* `$ bundle exec rake` to run the unit tests
+* `$ bundle exec rake contacts:export` to extract the data from your address book into a vCard file
+* `$ bundle exec rake contacts:turtle` to transform the data into RDF/Turtle 
+* Import the triples in (`data/contacts-<date>.ttl`) into Dydra or your triple store
+* `$ bundle exec rake contacts:infer` to create the inferred triples
+* Import the inferred triples in (`data/inferred-<date>.ttl`) into Dydra
+* `$ export PORT=4567` to define the IP port for the web server (can be any number)
+* `$ bundle exec rake web:start` to run the Sinatra web server
+* Go to `http://localhost:4567` to see the start page. Do stuff.
+
+# Vocabularies
+
+I use a set of RDF prefixes defined in `my_prefixes.rb`. You might want to change these. All the vocabularies are well-known, with a couple of additions below.
+
+* __net:__ (mapped to `http://alphajuliet.com/ns/ont/network#`) This is for relationships that are not captured elsewhere, such as in the `REL` or `ORG` vocabularies. The main properties in use are `net:workedAt` which maps from a `foaf:Person` to a `org:Organization`, and `net:preferredHotDrink` (see below).
+* __drink:__ (mapped to `http://alphajuliet.com/ns/ont/drink#`) This is for capturing a selection of hot drinks, particularly Australian regional ones. The classes are used as the range for the `net:preferredHotDrink` property.
+
 # Activity
 
 Check the [Trello board][trello].
@@ -61,4 +96,4 @@ Examples and desired output (assuming my standard prefixes):
 	item7.X-ABLabel:foaf:knows
 	--> ajc:person-xxxx foaf:knows [ a foaf:Person ; foaf:name "Alice Jones" ] .
 
-
+The current solution satisfies most of these, but the implementation is not as clean as I would like.
