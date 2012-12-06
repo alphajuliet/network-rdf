@@ -1,0 +1,14 @@
+# Infer direct foaf:knows relationships
+
+CONSTRUCT {
+	?p1 foaf:knows ?p2 .
+} 
+WHERE {
+	?p1 a foaf:Person ;
+		foaf:knows ?p3 .
+	?p2 a foaf:Person ;
+		foaf:name ?n2 .
+	?p3 foaf:name ?n2 .
+	FILTER isIRI(?p2)
+	FILTER isBlank(?p3)
+}

@@ -51,7 +51,7 @@ namespace :contacts do
 	# This should only be run after the asserted statements have been uploaded, because it needs to make queries against _those_ statements.
 	task :infer do
 		puts "# Generating inferred statements and writing to #{inferred_ttl}"
-		File.open(inferred_ttl, "w") do |out|
+		File.open(inferred_ttl, "w+") do |out|
 			Dir.glob(File.join(query_dir, "infer*.sparql")) do |src|
 				puts "# Running query in #{src}"
 				out.write(SparqlClient.construct(src))
