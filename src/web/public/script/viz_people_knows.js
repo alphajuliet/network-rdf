@@ -1,12 +1,14 @@
 // viz_people_knows.js
 
-var width = 700, height = 500;
+var width = 700, 
+		height = 500;
 
 var force = d3.layout.force()
-    .charge(-300)
-    .linkDistance(120)
+    .charge(-200)
+    .distance(100)
+    .gravity(.05)
+    .linkDistance(100)
     .size([width, height]);
-
     
 function renderNetworkOn(svg) {
 	
@@ -36,14 +38,16 @@ function renderNetworkOn(svg) {
 	
 		var node = svg.selectAll(".node")
 				.data(nodes)
-			.enter().append("circle")
+			.enter().append("g")
 				.attr("class", "node")
-				.attr("r", 5)
-				.call(force.drag);	
+				.call(force.drag);
 			
+		node.append("circle")
+				.attr("r", 5);
+				
 		node.append("text")
-			.attr("dx", "12px")
-			.attr("dy", 0)
+			.attr("dx", 10)
+			.attr("dy", 10)
 			.text(function (d) { return d.name });
 			
 		node.append("title")
@@ -54,8 +58,7 @@ function renderNetworkOn(svg) {
 					.attr("y1", function(d) { return d.source.y; })
 					.attr("x2", function(d) { return d.target.x; })
 					.attr("y2", function(d) { return d.target.y; });
-			node.attr("cx", function(d) { return d.x; })
-					.attr("cy", function(d) { return d.y; });
+			node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 		});
 			
 	});

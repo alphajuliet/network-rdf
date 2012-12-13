@@ -1,24 +1,28 @@
 /* viz.less */
 
+@borderColour: #900;
+@fillColour: lighten(@borderColour, 25%);
+@linkColour: #66f;
+@textColour: #666;
+
 div#viz {
-	font-size: 8pt;
-	//text.value { color: white; }
 }
 
 .node {
-  stroke: #600;
-  stroke-width: 1.5px;
-  fill: #f66;
+	circle {
+		stroke: @borderColour;
+		stroke-width: 1px;
+		fill: @fillColour;
+	}
 	text {
-		font-size: 10px;
-		font-family: Helvetica Neue, Arial, sans-serif;
-		color: #333;
+		font: 9px sans-serif;
+		stroke-color: @textColour;
+		pointer-events: none;
 	}
 }
 
-
 .link {
-  stroke: #999;
-  stroke-opacity: .6;
+  stroke: @linkColour;
+  stroke-opacity: .8;
 }
 
