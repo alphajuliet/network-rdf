@@ -163,6 +163,7 @@ class RDFVCard < VCardEventer
 	def lookup_range(property)
 		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::FOAF.knows
 		range = {:class => RDF::ORG.Organization, :identifier => RDF::SKOS.prefLabel } if property == RDF::NET.workedAt
+		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::NET.colleagueOf
 		raise ArgumentError, "Error: unrecognised property: #{property}" if range.nil?
 		range
 	end
