@@ -1,10 +1,10 @@
 // viz_people_knows.js
 
-var width = 800, height = 600;
+var width = 700, height = 500;
 
 var force = d3.layout.force()
-    .charge(-200)
-    .linkDistance(50)
+    .charge(-300)
+    .linkDistance(120)
     .size([width, height]);
 
     
@@ -29,20 +29,25 @@ function renderNetworkOn(svg) {
 			.size([width, height])
 			.start();
 
-		var link = svg.selectAll("line.link")
+		var link = svg.selectAll(".link")
 				.data(links)
 			.enter().append("line")
 				.attr("class", "link");
 	
-		var node = svg.selectAll("circle.node")
+		var node = svg.selectAll(".node")
 				.data(nodes)
 			.enter().append("circle")
 				.attr("class", "node")
 				.attr("r", 5)
 				.call(force.drag);	
 			
+		node.append("text")
+			.attr("dx", "12px")
+			.attr("dy", 0)
+			.text(function (d) { return d.name });
+			
 		node.append("title")
-			.text(function (d) { return d.name; });
+			.text(function (d) { return d.name });
 			
 		force.on("tick", function() {
 			link.attr("x1", function(d) { return d.source.x; })

@@ -113,6 +113,8 @@ module SparqlQueries
 			WHERE {
 				?a foaf:name ?source .
 				?a foaf:knows [ foaf:name ?target ] .
+				FILTER (?source != 'Andrew Joyner')
+				FILTER (?target != 'Andrew Joyner')
 			}"
 		end
 	end
