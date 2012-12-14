@@ -151,6 +151,15 @@ describe RDFAddressBook do
 		solutions.first[:page].to_s.should eq("http://www.example.org/")
 	end
 	
+	it "contains a net:colleagueOf relationship" do
+		query = RDF::Query.new do
+			pattern [:a, RDF.type, RDF::FOAF.Person]
+			pattern [:a, RDF::NET.colleagueOf, :b]
+		end
+		solutions = query.execute(@ab_test1.graph)
+		solutions.count.should eq(1)		
+	end
+	
 	it "records the RDF" do
 		@ab_test1.write_as_turtle(File.join(data_dir, "contacts-test1.ttl"))
 	end

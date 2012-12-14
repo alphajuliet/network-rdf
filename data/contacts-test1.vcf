@@ -29,6 +29,8 @@ item6.X-ABRELATEDNAMES:db:Geelong_football_club
 item6.X-ABLabel:dbo:team
 item7.X-ABRELATEDNAMES:Alice Jones
 item7.X-ABLabel:foaf:knows
+item8.X-ABRELATEDNAMES:Bob Brown
+item8.X-ABLabel:net:colleagueOf
 UID:6d9e0cbf-c599-4bec-8c01-b1b699914d04
 X-ABUID:6D9E0CBF-C599-4BEC-8C01-B1B699914D04:ABPerson
 END:VCARD
