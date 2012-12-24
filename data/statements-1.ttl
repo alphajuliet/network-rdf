@@ -1,0 +1,17 @@
+# Company acquisitions, mergers, and name changes
+
+ajc:oracle-australia org:subOrganizationOf ajc:oracle-corporation ;
+	foaf:homePage <http://www.oracle.com/> .
+
+ajc:oracle-corporation a org:Organization , dbo:Company ;
+	rdfs:seeAlso db:Oracle_Corporation ;
+	foaf:homePage <http://www.oracle.com/> .
+
+# Links to other information
+
+ajc:unico rdfs:seeAlso fb:m.03p3d9k ;
+	foaf:homePage <http://www.unico.com.au/> .
+
+# Additional relationships
+
+# The End

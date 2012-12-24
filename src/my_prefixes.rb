@@ -20,6 +20,7 @@ module RDF
 		:db 		=> "http://dbpedia.org/resource/",
 		:dbp 		=> "http://dbpedia.org/property/",
 		:dbo 		=> "http://dbpedia.org/ontology/",
+		:fb			=> "http://rdf.freebase.com/ns/",
 		:skos 	=> "http://www.w3.org/2004/02/skos/core#",
 		:rel		=> "http://purl.org/vocab/relationship",
 		:dct		=> "http://purl.org/dc/terms/",
@@ -47,6 +48,7 @@ module RDF
 	DB		= RDF.CreateVocab(:db)
 	DBP		= RDF.CreateVocab(:dbp)
 	DBO		= RDF.CreateVocab(:dbo)
+	FB		= RDF.CreateVocab(:fb)
 	
 	# Save for later
 	#REL		= RDF.CreateVocab(:rel)
