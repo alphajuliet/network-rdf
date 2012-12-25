@@ -1,8 +1,0 @@
-# Infer foaf:knows relationships from net:colleagueOf
-
-CONSTRUCT {
-	?a foaf:knows ?b
-}
-WHERE {
-	?a net:colleagueOf ?b .
-}
