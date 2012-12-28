@@ -4,7 +4,7 @@ Adventures in RDF, cloud, and social connections with Ruby.
 
 # Discussion
 
-A discussion of the work to date is covered in the blog post [Semantic Scratchings][blog1]. It basically converts your annotated contacts into RDF, uploads it to a triple store, and implements a simple front-end to query and view the data, including a couple of simple visualisations.
+A discussion of the work to date is covered in the blog post [Semantic Scratchings][blog1]. It basically converts your annotated contacts into RDF, uploads them to a triple store, and implements a simple web UI to query and view the data via SPARQL, and including a couple of simple visualisations via D3.js.
 
 The graph of an example contact in the store looks like the image below. There will often be additional custom RDF annotations or relationships added by the user.
 
@@ -28,8 +28,22 @@ The following requirements must be met:
 You may also want to:
 
 * Use rvm to manage Ruby versions and gemsets.
+* Use an alternative triple store that has a up-to-date SPARQL interface. You're on your own here.
 
 # Setup
+
+## Config
+
+Add a file called `config.yaml` in `src/` with the following entries, replacing _xxx_, _username_ and so on with your data.
+
+	dydra-token: _xxx_
+	dydra-repo: _yyy_
+	sparql-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf/sparql
+	rest-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf
+	repo-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf/statements
+	graph-uri: http://_your-path_/network-rdf
+
+## Install and run
 
 * `$ bundle install`
 * `$ rvm use 1.9.3`
@@ -49,13 +63,7 @@ You may also want to:
 I use a set of RDF prefixes defined in `my_prefixes.rb`. You might want to change these. All the vocabularies are well-known, with a couple of additions below.
 
 * __net:__ (mapped to `http://alphajuliet.com/ns/ont/network#`) This is for relationships that are not captured elsewhere, such as in the `REL` or `ORG` vocabularies. The main properties in use are `net:workedAt` which maps from a `foaf:Person` to a `org:Organization`, and `net:preferredHotDrink` (see below).
-* __drink:__ (mapped to `http://alphajuliet.com/ns/ont/drink#`) This is for capturing a selection of hot drinks, particularly Australian regional ones. The classes are used as the range for the `net:preferredHotDrink` property.
-
-# Activity
-
-Check the [Trello board][trello].
-
-[trello]: https://trello.com/board/network-rdf/508b13849712d34924002b86
+* __drink:__ (mapped to `http://alphajuliet.com/ns/ont/drink#`) This is for capturing a selection of hot drinks, particularly Australian regional ones. The classes are used as the range for the `net:preferredHotDrink` and `net:drinks` properties. This is still undergoing some change.
 
 # Issues
 

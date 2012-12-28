@@ -2,6 +2,7 @@
 cache/
 data/
 !data/contacts-test1.vcf
+src/config.yaml
 examples/
 *.html
 *.*~
