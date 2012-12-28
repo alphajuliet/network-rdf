@@ -14,6 +14,13 @@ The end-to-end process for delivering information to the user is shown in the fo
 
 <img src="doc/entity-model.png" width="640" />
 
+Note that the LinkedIn functionality is not complete. Some of the issues are:
+
+* There is a limit on the number of API calls that can be made per month. This makes it difficult to keep information up to date.
+* There is no SPARQL API that can be used in a federated query. 
+
+You'll also need to run `src/linkedin/authorise.rb` as a one-off monthly task to get your access token. The code should be reasonably straightforward. Your API token should be stored in `src/config.yaml`.
+
 [blog1]: http://alphajuliet.posterous.com/semantic-scratchings
 
 # Requirements
