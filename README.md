@@ -6,14 +6,6 @@ Adventures in RDF, cloud, and social connections with Ruby.
 
 A discussion of the work to date is covered in the blog post [Semantic Scratchings][blog1]. It basically converts your annotated contacts into RDF, uploads them to a triple store, and implements a simple web UI to query and view the data via SPARQL, and including a couple of simple visualisations via D3.js.
 
-The graph of an example contact in the store looks like the image below. There will often be additional custom RDF annotations or relationships added by the user.
-
-<img src="doc/example-graph.png" width="640" />
-
-The end-to-end process for delivering information to the user is shown in the following model. The raw contacts data traverses a number of steps and formats on its journey to the browser, but the process is well decoupled through standard interfaces and formats.
-
-<img src="doc/entity-model.png" width="640" />
-
 Note that the LinkedIn functionality is not complete. Some of the issues are:
 
 * There is a limit on the number of API calls that can be made per month. This makes it difficult to keep information up to date.
