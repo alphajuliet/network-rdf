@@ -169,6 +169,18 @@ namespace :dydra do
 end
 
 #----------------
+namespace :allegro do
+
+    desc "Get the number of triples"
+    task :size do
+        endpoint = MyConfig.get('allegro-endpoint')
+        repo = MyConfig.get('allegro-repo')
+        response = RestClient.get endpoint + "/repositories/" + repo + "/size"
+        puts response
+    end
+
+end
+#----------------
 namespace :web do
 	desc "Start the web UI"
 	task :start do
