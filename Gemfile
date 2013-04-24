@@ -15,6 +15,7 @@ gem "linkedin", "0.3.7"
 
 # Back end RDF store
 gem 'dydra', :git => 'git://github.com/dydra/dydra.git'
+gem 'agraph'
 
 # SPARQL
 gem "rest-client", "1.6.7"
