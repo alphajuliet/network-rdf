@@ -5,10 +5,9 @@ require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
 require 'config'
-require 'rest_client'
 require 'sparql_client'
-require 'dydra'
 require 'store/allegro'
+require 'store/dydra_store'
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
@@ -29,20 +28,23 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 #----------------
-db = AllegroGraph.new
+# Top-level tasks. They assume AllegroGraph is being used since Dydra doesn't
+# support loading through the REST interface..
+
+rdf_store = AllegroGraph.new
 
 desc "Generate updated contacts"
 task :generate => ['contacts:export', 'contacts:turtle']
 
 desc "Load contacts"
 task :load do
-    num = db.load_from_file(contacts_ttl)
+    num = rdf_store.load_from_file(contacts_ttl)
     puts "#{num} triples loaded."
 end
 
 desc "Infer relationships"
 task :infer => 'contacts:infer' do
-    num = db.add_from_file(inferred_ttl)
+    num = rdf_store.add_from_file(inferred_ttl)
     puts "#{num} inferred triples added."
 end
     
@@ -111,85 +113,31 @@ namespace :linkedin do
 end
 
 #----------------
-namespace :fourstore do
-
-	desc "Create and start the local 4store triple store"
-	task :start do
-		rdf_store_path = "/Applications/4store.app/Contents/MacOS/bin"
-		setup = File.join(rdf_store_path, "4s-backend-setup")
-		start = File.join(rdf_store_path, "4s-backend")
-		server = File.join(rdf_store_path, "4s-httpd")
-		instance = "test"
-		sh "#{setup} #{instance}"
-		sh "#{start} #{instance}"
-		sh "#{server} -p 8000 #{instance}"
-	end
-
-end
-
-#----------------
-namespace :dydra do
-
-	desc "Get number of triples"
-	task :size do
-		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
-		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get["dydra"]["repo-name"]]
-		puts "#{repo.count} triples"
-	end
-	
-	desc "Clear all statements"
-	task :clear_all do
-		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
-		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get["dydra"]["repo-name"]]
-		repo.clear!
-	end
-	
-	desc "Load new triples"
-	task :load do
-		puts "Loading triples from #{contacts_ttl}"
-		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
-		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get["dydra"]["repo-name"]]
-		RDF::Reader.open(contacts_ttl) do |reader|
-			statements = []
-			reader.each_statement do |statement|
-				statements << statement
-			end
-		end
-		repo.import!(statements)
-	end
-	
-end
-
-#----------------
-namespace :allegro do
+namespace :store do
 
     desc "Get the number of triples"
     task :size do
-        response = AllegroGraph.new.size
+        response = rdf_store.size
         puts "#{response} triples."
     end
 
     desc "Clear all triples"
     task :clear_all do
-        response = AllegroGraph.new.clear_all
+        response = rdf_store.clear_all
         puts "#{response} triples deleted."
     end
     
     desc "Load new triples"
     task :load, :src do |t, args|
-        response = AllegroGraph.new.load_from_file(args[:src])
+        response = rdf_store.load_from_file(args[:src])
         puts "#{response} triples loaded."
     end
 
     desc "Add triples"
     task :add, :query do |t, args|
-        response = AllegroGraph.new.add_from_file(args[:src])
+        response = rdf_store.add_from_file(args[:src])
         puts "#{response} triples added."
     end
-
 end
 #----------------
 namespace :web do
