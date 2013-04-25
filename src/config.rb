@@ -4,7 +4,8 @@ require 'yaml'
 
 class MyConfig
 		
-	def MyConfig.get(label)
+	def MyConfig.get
+        # Lazy initialisation
 		if @config.nil?
 			@config = YAML.load(
 				File.open(
@@ -12,7 +13,7 @@ class MyConfig
 						File.dirname(__FILE__), 
 						"config.yaml")))
 		end
-		@config[label]
+		@config
 	end
 	
 end

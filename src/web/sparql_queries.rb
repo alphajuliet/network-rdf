@@ -3,7 +3,7 @@
 module SparqlQueries
 
 	def query(&block)
-		client = SPARQL::Client.new(MyConfig.get('sparql-endpoint'))
+		client = SPARQL::Client.new(MyConfig.get["dydra"]["sparql"])
 		query = yield
 		client.query(RDF.Prefixes(:sparql) + query)
 	end

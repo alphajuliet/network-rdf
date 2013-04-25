@@ -65,7 +65,7 @@ namespace :contacts do
 		files = Dir.glob(File.join("data", "statements*.ttl"))
 		files.push(contacts_ttl)
 		graph    = 'http://alphajuliet.com/ns/network-rdf'
-		endpoint = MyConfig.get('repo-endpoint')
+		endpoint = MyConfig.get["dydra"]["repo"]
 		files.each do |fname|
 			filename = File.join(data_dir, fname)
 			puts "Loading #{filename} into #{graph} in 4store"
@@ -76,7 +76,7 @@ namespace :contacts do
 
 	desc "Update the triple store"
 	task :update do
-		endpoint = MyConfig.get('repo-endpoint')
+		endpoint = MyConfig.get["dydra"]["repo"]
 		puts "Updating the store with #{contacts_ttl}"
 		response = RestClient.put endpoint, File.read(contacts_ttl), :content_type => 'text/turtle'
 		puts "Response #{response.code}: #{response.to_str}"	
@@ -137,26 +137,26 @@ namespace :dydra do
 
 	desc "Get number of triples"
 	task :size do
-		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
 		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get('dydra-repo')]
+		repo = account[MyConfig.get["dydra"]["repo-name"]]
 		puts "#{repo.count} triples"
 	end
 	
 	desc "Clear all statements"
 	task :clear_all do
-		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
 		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get('dydra-repo')]
+		repo = account[MyConfig.get["dydra"]["repo-name"]]
 		repo.clear!
 	end
 	
 	desc "Load new triples"
 	task :load do
 		puts "Loading triples from #{contacts_ttl}"
-		Dydra.setup!(:token => MyConfig.get('dydra-token'))
+		Dydra.setup!(:token => MyConfig.get["dydra"]["token"])
 		account = Dydra::Account.new('alphajuliet')
-		repo = account[MyConfig.get('dydra-repo')]
+		repo = account[MyConfig.get["dydra"]["repo-name"]]
 		RDF::Reader.open(contacts_ttl) do |reader|
 			statements = []
 			reader.each_statement do |statement|
@@ -173,9 +173,8 @@ namespace :allegro do
 
     desc "Get the number of triples"
     task :size do
-        endpoint = MyConfig.get('allegro-endpoint')
-        repo = MyConfig.get('allegro-repo')
-        response = RestClient.get endpoint + "/repositories/" + repo + "/size"
+        repo = MyConfig.get["allegro"]["repo"]
+        response = RestClient.get repo + "/size"
         puts response
     end
 
