@@ -1,6 +1,7 @@
 # Ignore the cache and data folders
 cache/
 data/
+bookmarks/
 !data/contacts-test1.vcf
 src/config.yaml
 examples/

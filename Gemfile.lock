@@ -16,6 +16,8 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.3.2)
+    agraph (0.2)
+      transport (~> 1.0.5)
     builder (3.1.4)
     daemons (1.1.9)
     diff-lcs (1.1.3)
@@ -69,11 +71,13 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.3.3)
+    transport (1.0.6)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  agraph
   dydra!
   linkedin (= 0.3.7)
   markaby (= 0.7.2)
