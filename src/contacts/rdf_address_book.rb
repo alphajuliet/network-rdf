@@ -34,7 +34,9 @@ class RDFAddressBook
 		@vcards.each do |vcard|
 			triples = RDFVCard.new(vcard).to_rdf
 			triples.each { |tr| @graph << tr } 
+            # print "."
 		end
+        # puts "\n"
 	end
 	
 	#------------------------

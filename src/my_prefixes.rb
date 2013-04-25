@@ -9,11 +9,11 @@ module RDF
 	
 	PREFIX = {
 		:rdf 		=> "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-		:rdfs 	=> "http://www.w3.org/2000/01/rdf-schema#",
+		:rdfs 	    => "http://www.w3.org/2000/01/rdf-schema#",
 		:owl 		=> "http://www.w3.org/2002/07/owl#",
 		:xsd 		=> "http://www.w3.org/2001/XMLSchema#",
 		
-		:foaf 	=> "http://xmlns.com/foaf/0.1/",
+		:foaf 	    => "http://xmlns.com/foaf/0.1/",
 		:org		=> "http://www.w3.org/ns/org#",
 		:gldp		=> "http://www.w3.org/ns/people#",
 		:v			=> "http://www.w3.org/2006/vcard/ns#",
@@ -21,12 +21,12 @@ module RDF
 		:dbp 		=> "http://dbpedia.org/property/",
 		:dbo 		=> "http://dbpedia.org/ontology/",
 		:fb			=> "http://rdf.freebase.com/ns/",
-		:skos 	=> "http://www.w3.org/2004/02/skos/core#",
+		:skos 	    => "http://www.w3.org/2004/02/skos/core#",
 		:rel		=> "http://purl.org/vocab/relationship",
 		:dct		=> "http://purl.org/dc/terms/",
 		
 		:net 		=> "http://alphajuliet.com/ns/ont/network#",
-		:drink	=> "http://alphajuliet.com/ns/ont/drink#",
+		:drink	    => "http://alphajuliet.com/ns/ont/drink#",
 		:ajc 		=> "http://alphajuliet.com/ns/contact#",
 		:ajp 		=> "http://alphajuliet.com/ns/people#",
 		nil			=> "http://alphajuliet.com/ns/contact#"
@@ -44,14 +44,14 @@ module RDF
 	DRINK	= RDF.CreateVocab(:drink)
 	ORG		= RDF.CreateVocab(:org)
 	GLDP	= RDF.CreateVocab(:gldp)
-	V			= RDF.CreateVocab(:v)
+	V		= RDF.CreateVocab(:v)
 	DB		= RDF.CreateVocab(:db)
 	DBP		= RDF.CreateVocab(:dbp)
 	DBO		= RDF.CreateVocab(:dbo)
 	FB		= RDF.CreateVocab(:fb)
 	
 	# Save for later
-	#REL		= RDF.CreateVocab(:rel)
+	#REL	= RDF.CreateVocab(:rel)
 	
 	#------------------------
 	# Serialise the prefixes

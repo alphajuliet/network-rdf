@@ -6,3 +6,4 @@ src/config.yaml
 examples/
 *.html
 *.*~
+.*.swp
