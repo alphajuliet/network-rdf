@@ -8,6 +8,7 @@ require 'config'
 require 'rest_client'
 require 'sparql_client'
 require 'dydra'
+require 'store/allegro'
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
@@ -28,6 +29,27 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 #----------------
+db = AllegroGraph.new
+
+desc "Generate updated contacts"
+task :generate => ['contacts:export', 'contacts:turtle']
+
+desc "Load contacts"
+task :load do
+    num = db.load_from_file(contacts_ttl)
+    puts "#{num} triples loaded."
+end
+
+desc "Infer relationships"
+task :infer => 'contacts:infer' do
+    num = db.add_from_file(inferred_ttl)
+    puts "#{num} inferred triples added."
+end
+    
+desc "Export, generate, load, infer, update"
+task :full_update => [:generate, :load, :infer]
+
+#----------------
 namespace :contacts do
 
 	desc "Export all my contacts."
@@ -39,7 +61,7 @@ namespace :contacts do
 	end
 	
 	desc "Generate RDF/Turtle from the contacts VCard file."
-	task :turtle => :export do
+	task :turtle do
 		puts "# Generating RDF and writing to #{contacts_ttl}"
 		require 'contacts/rdf_address_book'	
 		ab = RDFAddressBook.new_from_file(contacts_vcf)
@@ -58,33 +80,6 @@ namespace :contacts do
 			end
 		end
 	end
-	
-	desc "Load all asserted RDF statements into the triple store."
-	task :load do
-		# Files to load
-		files = Dir.glob(File.join("data", "statements*.ttl"))
-		files.push(contacts_ttl)
-		graph    = 'http://alphajuliet.com/ns/network-rdf'
-		endpoint = MyConfig.get["dydra"]["repo"]
-		files.each do |fname|
-			filename = File.join(data_dir, fname)
-			puts "Loading #{filename} into #{graph} in 4store"
-			response = RestClient.post endpoint, File.read(filename), :content_type => 'text/turtle'
-			puts "Response #{response.code}: #{response.to_str}"	
-		end
-	end
-
-	desc "Update the triple store"
-	task :update do
-		endpoint = MyConfig.get["dydra"]["repo"]
-		puts "Updating the store with #{contacts_ttl}"
-		response = RestClient.put endpoint, File.read(contacts_ttl), :content_type => 'text/turtle'
-		puts "Response #{response.code}: #{response.to_str}"	
-	end
-	
-	desc "Export, transform, and load contact info into the triple store."
-	task :etl => ['contacts:export', 'contacts:turtle', 'contacts:load', 'contacts:infer']
-
 end
 
 #----------------
@@ -173,9 +168,26 @@ namespace :allegro do
 
     desc "Get the number of triples"
     task :size do
-        repo = MyConfig.get["allegro"]["repo"]
-        response = RestClient.get repo + "/size"
-        puts response
+        response = AllegroGraph.new.size
+        puts "#{response} triples."
+    end
+
+    desc "Clear all triples"
+    task :clear_all do
+        response = AllegroGraph.new.clear_all
+        puts "#{response} triples deleted."
+    end
+    
+    desc "Load new triples"
+    task :load, :src do |t, args|
+        response = AllegroGraph.new.load_from_file(args[:src])
+        puts "#{response} triples loaded."
+    end
+
+    desc "Add triples"
+    task :add, :query do |t, args|
+        response = AllegroGraph.new.add_from_file(args[:src])
+        puts "#{response} triples added."
     end
 
 end
