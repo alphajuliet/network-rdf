@@ -22,31 +22,27 @@ The following requirements must be met:
 * OSX (I'm on 10.8 but earlier versions may work) 
 * Your address book is stored in the Contacts app. I use annotations to store additional RDF information, generally as relationships, e.g. `spouse | John Smith`, `foaf:knows | Alice Jones`, and `net:workedAt | Example Corporation`
 * Ruby 1.9.3 (1.9.2 may also work, I haven't tried)
-* An account on Dydra. Or you'll need to set up the API to talk to another triple store accessible via SPARQL endpoint and a web-services API. This can of course be local.
+* An RDF store. I've set up two interfaces: Dydra and to AllegroGraph. You may
+  need to add more by subclassing the RdfStore class in `src/store`.
 
 You may also want to:
 
 * Use rvm to manage Ruby versions and gemsets.
-* Use an alternative triple store that has a up-to-date SPARQL interface. You're on your own here.
+* Add another triple store.
 
 # Setup
 
 ## Config
 
-Add a file called `config.yaml` in `src/` with the following entries, replacing _xxx_, _username_ and so on with your data.
-
-	dydra-token: _xxx_
-	dydra-repo: _yyy_
-	sparql-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf/sparql
-	rest-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf
-	repo-endpoint: http://_xxx_@api.dydra.com/_username_/network-rdf/statements
-	graph-uri: http://_your-path_/network-rdf
+Update `src/config.rb` with details of your RDF store. Note that environment
+variables should be created to hold any credentials.
 
 ## Install and run
 
 * `$ bundle install`
 * `$ rvm use 1.9.3`
-* Update `config.yaml` with your entries. The key one is the SPARQL endpoint.
+* Update `config.rb` with your entries. The key one is the SPARQL endpoint.
+* Set the necessary environment variables.
 * `$ bundle exec rake` to run the unit tests
 * `$ bundle exec rake contacts:export` to extract the data from your address book into a vCard file
 * `$ bundle exec rake contacts:turtle` to transform the data into RDF/Turtle 
