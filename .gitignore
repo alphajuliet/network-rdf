@@ -3,7 +3,7 @@ cache/
 data/
 bookmarks/
 !data/contacts-test1.vcf
-src/config.yaml
+src/env_settings.sh
 examples/
 *.html
 *.*~

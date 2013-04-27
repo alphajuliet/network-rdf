@@ -3,8 +3,8 @@
 module SparqlQueries
 
 	def query(&block)
-        store = MyConfig.get["store"]
-		client = SPARQL::Client.new(MyConfig.get[store]["sparql"])
+        store = Configuration.for('rdf_store').store
+		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = yield
 		client.query(RDF.Prefixes(:sparql) + query)
 	end

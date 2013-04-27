@@ -13,8 +13,8 @@ require 'config'
 class SparqlClient
 	
 	def SparqlClient.select(query_file)
-        store = MyConfig.get["store"]
-		client = SPARQL::Client.new(MyConfig.get[store]["sparql"])
+        store = Configuration.for('rdf_store').store
+		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = File.open(query_file, "r").read
 		response = client.query(RDF.Prefixes(:sparql) + query)
 		output = []
@@ -32,8 +32,8 @@ class SparqlClient
 	end
 
 	def SparqlClient.construct(query_file, format=:turtle)
-        store = MyConfig.get["store"]
-		client = SPARQL::Client.new(MyConfig.get[store]["sparql"])
+        store = Configuration.for('rdf_store').store
+		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = File.open(query_file, "r").read
 		graph = RDF::Graph.new
 		graph << client.query(RDF.Prefixes(:sparql) + query)
@@ -41,15 +41,15 @@ class SparqlClient
 	end
 	
 	def SparqlClient.insert(triples_file)
-        store = MyConfig.get["store"]
-		client = SPARQL::Client.new(MyConfig.get[store]["sparql"])
+        store = Configuration.for('rdf_store').store
+		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = "INSERT DATA { " + File.open(triples_file, "r").read + " }"
 		client.query(RDF.Prefixes(:sparql) + "\n" + query)
 	end
 	
 	def SparqlClient.clear(graph="DEFAULT")
-        store = MyConfig.get["store"]
-		client = SPARQL::Client.new(MyConfig.get[store]["sparql"])
+        store = Configuration.for('rdf_store').store
+		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = "CLEAR #{graph}"
 		client.query(RDF.Prefixes(:sparql) + "\n" + query)
 	end

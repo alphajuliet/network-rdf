@@ -4,17 +4,16 @@ $:.unshift File.join(File.dirname(__FILE__), "src")
 require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
-require 'config'
 require 'sparql_client'
 require 'store/allegro'
 require 'store/dydra_store'
+require 'config'
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
 
 # Directories
 here = File.dirname(__FILE__)
-config = YAML.load(File.open(File.join(here, "src", "config.yaml")))
 data_dir = File.expand_path(File.join(here, "data"))
 ex_dir = File.expand_path(File.join(here, "examples"))
 query_dir = File.expand_path(File.join(here, "src", "query"))
@@ -31,7 +30,7 @@ task :default => :spec
 # Top-level tasks. They assume AllegroGraph is being used since Dydra doesn't
 # support loading through the REST interface..
 
-rdf_store = AllegroGraph.new
+rdf_store = eval(Configuration.for('rdf_store').class_name + ".new")
 
 desc "Generate updated contacts"
 task :generate => ['contacts:export', 'contacts:turtle']

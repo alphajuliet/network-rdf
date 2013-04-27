@@ -5,6 +5,7 @@ source "http://rubygems.org/"
 # General
 gem "rake"
 gem "rspec"
+gem "configuration"
 
 # RDF and data
 gem "rdf", "0.3.11"
