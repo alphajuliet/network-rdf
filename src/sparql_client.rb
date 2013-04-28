@@ -57,11 +57,14 @@ class SparqlClient
 end
 
 if __FILE__ == $0
-	opts = OptionParser.new
-	opts.on("-c", "--construct QUERY_FILE", String) { |v| puts SparqlClient.construct(fname) }
-	opts.on("-s", "--select QUERY_FILE", String) 		{ |v| puts SparqlClient.select(fname) }
-	opts.on("-i", "--insert TRIPLES_FILE", String) 	{ |v| SparqlClient.insert(fname) }
-	opts.on("-x", "--clear GRAPH", String)	 				{ |v| SparqlClient.clear(graph) }
+    if ARGV.length != 2
+        puts "Usage: #{__FILE__} <command> <file>"
+        exit -1
+    end
+    cmd = ARGV[0]
+    target = ARGV[1]
+    puts SparqlClient.construct(target) if cmd.downcase == "construct"
+    puts SparqlClient.select(target) if cmd.downcase == "select"
 end
 
 # The End
