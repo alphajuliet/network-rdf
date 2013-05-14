@@ -2,6 +2,7 @@
 cache/
 data/
 bookmarks/
+tags
 !data/contacts-test1.vcf
 src/env_settings.sh
 examples/

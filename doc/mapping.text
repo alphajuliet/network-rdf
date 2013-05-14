@@ -1,0 +1,91 @@
+Title: Data Mapping
+Author: AJ
+Date: 2013-04-28
+
+This describes the mapping from VCard items into RDF.
+
+# Requirements 
+
+The only necessary items for the RDF graph are:
+
+* Name
+* Relationships
+* Organisation
+
+A function `map_uri` that maps strings to compatible URIs by...
+
+* Transposing to lower case
+* Removing punctuation characters
+* Replacing blanks with hyphens
+
+e.g. "David O'Hanlon" -> "david-ohanlon", "Sham 69" -> "sham-69"
+
+# Mapping
+
+## Namespaces
+
+The following namespaces and prefixes are used:
+
+    vcard = http://www.w3.org/2006/vcard/ns#
+    foaf = http://xmlns.com/foaf/0.1/
+
+## Person
+
+A node is created with the name `ajp:fn`, where `fn = map_uri(full name)`.
+
+    ajp:$fn$ a foaf:Person, vcard:Individual ;
+
+## Organisation
+
+For each organisation a node is created with the CURIE `ajo:org`, where `org =
+map_uri(org_name)`.
+
+    ajo:$org$ a vcard:Org ;
+
+
+## VCARD Properties
+
+If VCARD lines are passed as the hash `arg`, then the mappings below are
+applied for each keyword. The subject is S.
+
+Any keyword not listed is ignored.
+
+### N
+
+If the card is for a person:
+
+    S foaf:name $arg.value$ ;
+        vcard:formattedName $arg.value$ .
+
+If the card is for an organisation:
+
+    S foaf:name $arg.value$ ;
+        vcard:organizationName $arg.value$ .
+
+### ORG
+
+    S
+    _:card vcard:email _:email .
+    _:email a v:arg.value.location.first .
+
+## Relationships
+
+For the statement `X p Y`, we have the following cases:
+
+### Case 1 
+
+    p = manager | parent | child | foaf:knows | net:colleagueOf...
+
+maps to
+
+    X foaf:knows [ a foaf:Person; foaf:name Y ] .
+
+### Case 2
+
+    p = net:workedAt | net:worksAt
+
+maps to
+
+    X p [ a org:Organization ; org:orgName Y ] .
+
+
