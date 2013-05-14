@@ -56,9 +56,12 @@ get '/repo'											do render_on(:repo, cmd_repo) end
 # Composite views, no data
 get '/person/:name', :provides => "html" do render_on(:person) end
 
-# Data only, no view
+# Data only, no custom view
 get '/person/:name/knows'				do render_on(:query1, cmd_person_knows) end
 get '/person/:name/card'				do render_on(:query1, cmd_person_card) end
 get '/person/:name/org'					do render_on(:query1, cmd_person_org) end
+
+# Native SPARQL query
+get '/sparql'										do query_json { URI.unescape(params[:query]) } end
 
 # The End

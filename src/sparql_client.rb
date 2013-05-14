@@ -12,23 +12,36 @@ require 'config'
 
 class SparqlClient
 	
+<<<<<<< HEAD
 	def SparqlClient.select(query_file)
         store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
+=======
+	def SparqlClient.select(query_file, format=:text)
+		client = SPARQL::Client.new(MyConfig.get("sparql-endpoint"))
+>>>>>>> c05
 		query = File.open(query_file, "r").read
-		response = client.query(RDF.Prefixes(:sparql) + query)
-		output = []
-		header = response.variable_names
-		response.each_solution do |solution|
-			row = []
-			solution.each_binding do |name, value|
-				p = value.to_s
-				p = "<#{p}>" if value.kind_of? RDF::URI
-				row << p
+
+		if format == :text
+			response = client.query(RDF.Prefixes(:sparql) + query)
+			output = []
+			header = response.variable_names
+			response.each_solution do |solution|
+				row = []
+				solution.each_binding do |name, value|
+					p = value.to_s
+					p = "<#{p}>" if value.kind_of? RDF::URI
+					row << p
+				end
+				output << row
 			end
-			output << row
+			Terminal::Table.new :headings => header, :rows => output
+		elsif format == :json
+			response = RestClient.get MyConfig.get('sparql-endpoint'), 
+				:accept => 'application/sparql-results+json', 
+				:params => { :query => RDF.Prefixes(:sparql) << query }
+			response
 		end
-		Terminal::Table.new :headings => header, :rows => output
 	end
 
 	def SparqlClient.construct(query_file, format=:turtle)

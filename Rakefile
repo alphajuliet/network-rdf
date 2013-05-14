@@ -5,9 +5,14 @@ require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
 require 'sparql_client'
+<<<<<<< HEAD
 require 'store/allegro'
 require 'store/dydra_store'
 require 'config'
+=======
+require 'dydra'
+require 'my_prefixes'
+>>>>>>> c05
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
@@ -157,7 +162,6 @@ end
 
 desc "Print out all my prefixes in RDF/Turtle format"
 task :prefixes do
-	require 'my_prefixes'
 	puts RDF.Prefixes(:sparql)
 end
 
@@ -166,15 +170,22 @@ namespace :sparql do
 	desc "Run a SPARQL select query"
 	task :select, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "# Running query in #{src}"
-		puts SparqlClient.select(src)
+		puts "# Running query from #{src}"
+		puts SparqlClient.select(src, :text)
 	end
 	
 	desc "Run a SPARQL construct query"
 	task :construct, :query do |t, args|
 		src = File.join(ex_dir, args[:query] + ".sparql")
-		puts "# Running query in #{src}"
+		puts "# Running query from #{src}"
 		puts SparqlClient.construct(src)
+	end
+	
+	desc "Run a SPARQL select returning JSON"
+	task :select_json, :query do |t, args|
+		src = File.join(ex_dir, args[:query] + ".sparql")
+		puts "# Running query from #{src}"
+		puts SparqlClient.select(src, :json)
 	end
 end
 # The End
