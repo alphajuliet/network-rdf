@@ -12,14 +12,9 @@ require 'config'
 
 class SparqlClient
 	
-<<<<<<< HEAD
 	def SparqlClient.select(query_file)
         store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
-=======
-	def SparqlClient.select(query_file, format=:text)
-		client = SPARQL::Client.new(MyConfig.get("sparql-endpoint"))
->>>>>>> c05
 		query = File.open(query_file, "r").read
 
 		if format == :text

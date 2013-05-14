@@ -5,14 +5,9 @@ require 'fileutils'
 require 'rspec/core/rake_task'
 require 'rake/clean'
 require 'sparql_client'
-<<<<<<< HEAD
 require 'store/allegro'
 require 'store/dydra_store'
 require 'config'
-=======
-require 'dydra'
-require 'my_prefixes'
->>>>>>> c05
 
 t = Time.new
 today = t.strftime("%Y-%m-%d")
