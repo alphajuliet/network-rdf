@@ -7,30 +7,35 @@ ORG:Example Corporation;
 TITLE:CTO
 EMAIL;type=INTERNET;type=WORK;type=pref:jane.smith@example.org
 EMAIL;type=INTERNET;type=HOME:jane.smith12345@gmail.com
+item1.EMAIL;type=INTERNET:janes66@hotmail.com
+item1.X-ABLabel:_$!<Other>!$_
 TEL;type=CELL;type=VOICE;type=pref:+61 412 345 678
 TEL;type=WORK;type=VOICE:+61 2 9876 5432
-ADR;type=WORK;type=pref:;;Level 50\, 1 Martin Place;Sydney;NSW;2000;Australia
-X-SOCIALPROFILE;type=linkedin:http://www.linkedin.com/in/janesmith12345
+item2.ADR;type=WORK;type=pref:;;Level 50\, 1 Martin Place;Sydney;NSW;2000;Australia
+item2.X-ABADR:au
 X-SOCIALPROFILE;type=twitter:http://twitter.com/janesmith12345
+X-SOCIALPROFILE;type=linkedin:http://www.linkedin.com/in/janesmith12345
 NOTE:Met at Oracle
 URL;type=WORK;type=pref:http://www.example.org/
-item1.URL:http://jane.smith.name/
-item1.X-ABLabel:_$!<HomePage>!$_
-item2.URL:http://www.example.org/janesmith/profile
-item2.X-ABLabel:profile
+item3.URL:http://jane.smith.name/
+item3.X-ABLabel:_$!<HomePage>!$_
+item4.URL:http://www.example.org/janesmith/profile
+item4.X-ABLabel:profile
 BDAY:1976-04-01
-item3.X-ABRELATEDNAMES;type=pref:John Smith
-item3.X-ABLabel:_$!<Spouse>!$_
-item4.X-ABRELATEDNAMES:Marcus Smith
-item4.X-ABLabel:_$!<Child>!$_
-item5.X-ABRELATEDNAMES:Oracle Australia
-item5.X-ABLabel:net:workedAt
-item6.X-ABRELATEDNAMES:db:Geelong_football_club
-item6.X-ABLabel:dbo:team
-item7.X-ABRELATEDNAMES:Alice Jones
-item7.X-ABLabel:foaf:knows
-item8.X-ABRELATEDNAMES:Bob Brown
-item8.X-ABLabel:net:colleagueOf
+item5.X-ABRELATEDNAMES;type=pref:John Smith
+item5.X-ABLabel:_$!<Spouse>!$_
+item6.X-ABRELATEDNAMES:Marcus Smith
+item6.X-ABLabel:_$!<Child>!$_
+item7.X-ABRELATEDNAMES:Oracle Australia
+item7.X-ABLabel:net:workedAt
+item8.X-ABRELATEDNAMES:db:Geelong_football_club
+item8.X-ABLabel:dbo:team
+item9.X-ABRELATEDNAMES:Alice Jones
+item9.X-ABLabel:foaf:knows
+item10.X-ABRELATEDNAMES:Bob Brown
+item10.X-ABLabel:net:colleagueOf
+item11.X-ABRELATEDNAMES:drink:Flat_white
+item11.X-ABLabel:net:drinks
 UID:6d9e0cbf-c599-4bec-8c01-b1b699914d04
-X-ABUID:6D9E0CBF-C599-4BEC-8C01-B1B699914D04:ABPerson
+X-ABUID:A5A2D6F7-2DE7-4EC9-ABA1-45F336683FC1:ABPerson
 END:VCARD
