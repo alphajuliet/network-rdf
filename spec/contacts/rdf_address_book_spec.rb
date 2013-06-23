@@ -92,7 +92,7 @@ describe RDFAddressBook do
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)		
-        solutions.first[:c].should eq("http://alphajuliet.com/ns/contact#org-oracle-australia")
+    solutions.first[:c].should eq("http://alphajuliet.com/ns/contact#org-oracle-australia")
 	end
 
 	it "contains a relationship" do
