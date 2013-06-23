@@ -88,6 +88,7 @@ module RDF
 			end
 		end
 		
+    # Turn a potential CURIE into a real URI. Leave unchanged if not.
 		def self.expand_curie(curie)
 			if (curie =~ /^(\w+):([-_\w]+)/)
 				RDF::URI.new(self.expand($1) + $2)
