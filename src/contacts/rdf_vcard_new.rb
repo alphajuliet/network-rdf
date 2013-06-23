@@ -21,26 +21,19 @@ class RDFVCard < VCardEventer
 		@triples
 	end
     
-    def add_triple(tr)
-        raise "Error: Malformed triple: #{tr}" if tr.length != 3
-        raise "Error: Malformed triple: #{tr}" if tr[0].nil?
-        raise "Error: Malformed triple: #{tr}" if tr[1].nil?
-        raise "Error: Malformed triple: #{tr}" if tr[2].nil?
-        @triples << tr
-    end
+  def add_triple(tr)
+    raise "Error: Malformed triple: #{tr}" if tr.length != 3
+    raise "Error: Malformed triple: #{tr}" if tr[0].nil?
+    raise "Error: Malformed triple: #{tr}" if tr[1].nil?
+    raise "Error: Malformed triple: #{tr}" if tr[2].nil?
+    @triples << tr
+  end
 
 	#------------------------
 	def add_person
-		@subject = RDF::AJC.id
-		@card = RDF::Node.new
+		@subject = RDF::AJC.id # This is a placeholder URI
 		add_triple [@subject, RDF.type, RDF::FOAF.Person]
-		add_triple [@subject, RDF::GLDP.card, @card]
-		add_triple [@card, RDF.type, RDF::V.VCard]
-
-		# I know every contact
-		# me = RDF::Node.new
-		# @triples << [me, RDF::FOAF.name, "Andrew Joyner"]
-		# @triples << [me, RDF::FOAF.knows, @subject]
+    add_triple [@subject, RDF.type, RDF::V.Individual]
 		
 		@group = Hash.new
 	end
@@ -48,47 +41,59 @@ class RDFVCard < VCardEventer
 	#------------------------
 	def do_n(e)
 		name = e.value.fullname
-        # puts name ### for DEBUG
+    # puts name ### for DEBUG
 		add_triple [@subject, RDF::FOAF.name, name]
-		add_triple [@card, RDF::V.fn, name]
+		add_triple [@subject, RDF::V.fn, name]
 	end
 		
 	def do_email(e)
 		email = RDF::Node.new
-		add_triple [@card, RDF::V.email, email]
-		add_triple [email, RDF.type, RDF::V[e.value.location.first]]
-		add_triple [email, RDF.value, e.value.to_s]
+    begin
+      add_triple [@subject, RDF::V.hasEmail, email]
+      add_triple [email, RDF.type, RDF::V.Email]
+      add_triple [email, RDF.type, RDF::V[e.value.location.first.capitalize]]
+      add_triple [email, RDF::V.email, e.value.to_s]
+    rescue Exception
+      puts e.inspect
+    end
 	end
 	
 	def do_tel(e)
 		t = e.value
 		tel = RDF::Node.new
-		add_triple [@card, RDF::V.tel, tel]
-		add_triple [tel, RDF.type, RDF::V[t.location.first]]
-		add_triple [tel, RDF.value, t.to_s]		
+    begin
+      add_triple [@subject, RDF::V.hasTelephone, tel]
+      add_triple [tel, RDF.type, RDF::V[t.location.first.capitalize]] unless t.location.nil?
+      add_triple [tel, RDF.type, RDF::V.Voice]
+      add_triple [tel, RDF::V.telephone, t.to_s]		
+    rescue Exception
+      puts t.location
+    end
 	end
 
 	def do_adr(e)
 		a = e.value
-		unless a.locality.nil?
+		begin
 			adrs = RDF::Node.new
-			add_triple [@card, RDF::V.adr, adrs]
-			add_triple [adrs, RDF.type, RDF::V[a.location.first]]
+			add_triple [@subject, RDF::V.hasAddress, adrs]
+			add_triple [adrs, RDF.type, RDF::V[a.location.first.capitalize]]
 			add_triple [adrs, RDF::V.locality, a.locality] unless a.locality.empty?
 			add_triple [adrs, RDF::V.country, (a.country.empty? ? "Australia" : a.country)]
+    rescue Exception
+      puts a.inspect
 		end
 	end
 
-	def do_title(e)
-		title = e.value
-        unless @membership.nil?
-            role = RDF::Node.new
-            add_triple [@membership, RDF::ORG.role, role]
-            add_triple [role, RDF.type, RDF::ORG.Role]
-            add_triple [role, RDF::SKOS.prefLabel, title]
-        end
-	end
-				
+  def do_title(e)
+    title = e.value
+    unless @membership.nil?
+      role = RDF::Node.new
+      add_triple [@membership, RDF::ORG.role, role]
+      add_triple [role, RDF.type, RDF::ORG.Role]
+      add_triple [role, RDF::SKOS.prefLabel, title]
+    end
+  end
+
 	def do_org(e)
 		org = e.value
 		unless org.nil?
@@ -99,10 +104,11 @@ class RDFVCard < VCardEventer
 			add_triple [@membership, RDF::ORG.member, @subject]
 			
 			# Add the organisation
-			company_id = "org-" + org.first.downcase.tr('\.&+ ', '-')
-			company = RDF::AJC[company_id]
+			company_id = RDF.Map_URI(org.first)
+			company = RDF::AJO[company_id]
 			add_triple [@membership, RDF::ORG.organization, company]
 			add_triple [company, RDF.type, RDF::ORG.Organization]
+      add_triple [company, RDF.type, RDF::V.Org]
 			add_triple [company, RDF::SKOS.prefLabel, org.first]
 		end		
 	end
@@ -120,7 +126,7 @@ class RDFVCard < VCardEventer
 	end
 	
 	def do_note(e)
-		add_triple [@card, RDF::V.note, e.value.to_s]
+		add_triple [@subject, RDF::V.note, e.value.to_s]
 		if (e.value =~ /rdf:\s*\{(.+)\}/m) # /m = multi-line pattern
 			rdf = $1
 			rdf.gsub!(/<>/, "#{@subject}")
@@ -161,16 +167,18 @@ class RDFVCard < VCardEventer
 		end				
 	end
 	
-	def map_relationship(property)
-		p = property
-		return p if property.instance_of?(RDF::URI)
-		p = RDF::RDFS.seeAlso # default
-		p = RDF::FOAF.homepage if property =~ /(website$)|(HomePage)|(profile)/i
-		p = RDF::FOAF.workplaceHomepage if property =~ /company website$/i
-		p = RDF::FOAF.weblog if property =~ /blog/i
-		p
-	end
-	
+  def map_relationship(property)
+    p = property
+    return p if property.instance_of?(RDF::URI)
+    case 
+      when property =~ /(website$)|(HomePage)|(profile)/i then p = RDF::FOAF.homepage 
+      when property =~ /company website$/i then p = RDF::FOAF.workplaceHomepage 
+      when property =~ /blog/i then p = RDF::FOAF.weblog
+      else p = RDF::RDFS.seeAlso
+    end
+    p
+  end
+
 	def lookup_range(property)
 		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::FOAF.knows
 		range = {:class => RDF::ORG.Organization, :identifier => RDF::SKOS.prefLabel } if property == RDF::NET.workedAt
@@ -186,18 +194,26 @@ class RDFVCard < VCardEventer
 			object = RDF::Vocabulary.expand_curie(entry[:object])
 			return if object.nil?
 				
-			# If the target is _not_ already a URI then we need a layer of indirection
 			if object.instance_of?(RDF::URI)
-				property = map_relationship(property)
-				return if property.nil?
-				add_triple [@subject, property, object]
+        if property.instance_of?(RDF::URI)
+          add_triple [@subject, property, object]
+        else
+          add_triple [@subject, RDF::RDFS.seeAlso, object]
+        end
 			else
-				target = RDF::Node.new
-				property = RDF::FOAF.knows unless property.instance_of?(RDF::URI) 
-				x = lookup_range(property)
-				add_triple [target, RDF.type, x[:class]]
-				add_triple [@subject, property, target]
-				add_triple [target, x[:identifier], object]
+        if property == RDF::NET.workedAt || property == RDF::NET.worksAt
+          add_triple [@subject, property, RDF::AJC["org-" + RDF.Map_URI(object)]]
+        elsif property == RDF::NET.colleagueOf
+          target = RDF::Node.new
+          add_triple [@subject, property, target]
+          add_triple [target, RDF.type, RDF::FOAF.Person]
+          add_triple [target, RDF::FOAF.name, object]
+        else
+          target = RDF::Node.new
+          add_triple [@subject, RDF::FOAF.knows, target]
+          add_triple [target, RDF.type, RDF::FOAF.Person]
+          add_triple [target, RDF::FOAF.name, object]
+        end
 			end
 		end
 	end

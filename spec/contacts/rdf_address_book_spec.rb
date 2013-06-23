@@ -13,7 +13,7 @@ describe RDFAddressBook do
 		@ab_test1 = RDFAddressBook.new_from_file(File.join(data_dir, "contacts-test1.vcf"))
 		@ab_test1.convert_to_rdf
 	end
-		
+
 	it "gets instantiated" do
 		@ab_empty.should_not be_nil
 		@ab_empty.graph.should be_a_kind_of(RDF::Graph)
@@ -34,8 +34,8 @@ describe RDFAddressBook do
 		
 	it "contains a VCard with the fullname" do
 		query = RDF::Query.new do
-			pattern [:card, RDF.type, RDF::V.VCard]
-			pattern [:card, RDF::V.fn, :name]
+			pattern [:subject, RDF.type, RDF::V.Individual]
+			pattern [:subject, RDF::V.fn, :name]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)
@@ -45,8 +45,8 @@ describe RDFAddressBook do
 	
 	it "contains two phone numbers" do
 		query = RDF::Query.new do
-			pattern [:card, RDF.type, RDF::V.VCard]
-			pattern [:card, RDF::V[:tel], :tel]
+			pattern [:subject, RDF.type, RDF::V.Individual]
+			pattern [:subject, RDF::V.hasTelephone, :tel]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)
@@ -54,9 +54,9 @@ describe RDFAddressBook do
 	
 	it "contains two email addresses" do
 		query = RDF::Query.new do
-			pattern [:card, RDF.type, RDF::V.VCard]
-			pattern [:card, RDF::V.email, :e]
-			pattern [:e, RDF.value, :address]
+			pattern [:subject, RDF.type, RDF::V.Individual]
+			pattern [:subject, RDF::V.hasEmail, :e]
+			pattern [:e, RDF::V.email, :address]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)		
@@ -77,7 +77,7 @@ describe RDFAddressBook do
 	
 	it "contains the note information" do
 		query = RDF::Query.new do
-			pattern [:c, RDF.type, RDF::V.VCard]
+			pattern [:c, RDF.type, RDF::V.Individual]
 			pattern [:c, RDF::V.fn, "Jane Smith"]
 			pattern [:c, RDF::V.note, :note]
 		end
@@ -89,11 +89,10 @@ describe RDFAddressBook do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
 			pattern [:p, RDF::NET.workedAt, :c]
-			pattern [:c, RDF.type, RDF::ORG.Organization]
-			pattern [:c, RDF::SKOS.prefLabel, "Oracle Australia"]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(1)		
+        solutions.first[:c].should eq("http://alphajuliet.com/ns/contact#org-oracle-australia")
 	end
 
 	it "contains a relationship" do
@@ -131,10 +130,10 @@ describe RDFAddressBook do
 		solutions.first[:title].should eq("CTO")
 	end
 	
-	it "contains home pages" do
+	it "contains linked pages" do
 		query = RDF::Query.new do
 			pattern [:p, RDF.type, RDF::FOAF.Person]
-			pattern [:p, RDF::FOAF.homepage, :page]
+			pattern [:p, RDF::RDFS.seeAlso, :page]
 		end
 		solutions = query.execute(@ab_test1.graph)
 		solutions.count.should eq(2)

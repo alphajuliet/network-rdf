@@ -3,8 +3,12 @@
 $:.unshift File.join(File.dirname(__FILE__), "..", "src")
 require 'my_prefixes'
 
-describe RDF do
+describe 'RDF' do
 
+  it "maps to acceptable URIs" do
+    RDF.Map_URI("David O'Hanlon").should eq("david-o-hanlon")
+  end
+		
 	it "contains prefixes" do
 		RDF::PREFIX.size.should be > 0
 		RDF::PREFIX[:rdf].should eq("http://www.w3.org/1999/02/22-rdf-syntax-ns#")

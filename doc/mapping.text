@@ -15,10 +15,9 @@ The only necessary items for the RDF graph are:
 A function `map_uri` that maps strings to compatible URIs by...
 
 * Transposing to lower case
-* Removing punctuation characters
-* Replacing blanks with hyphens
+* Replacing punctuation characters and blanks with hyphens
 
-e.g. "David O'Hanlon" -> "david-ohanlon", "Sham 69" -> "sham-69"
+e.g. "David O'Hanlon" -> "david-o-hanlon", "Sham 69" -> "sham-69"
 
 # Mapping
 
