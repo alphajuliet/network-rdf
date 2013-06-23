@@ -48,40 +48,28 @@ class RDFVCard < VCardEventer
 		
 	def do_email(e)
 		email = RDF::Node.new
-    begin
-      add_triple [@subject, RDF::V.hasEmail, email]
-      add_triple [email, RDF.type, RDF::V.Email]
-      add_triple [email, RDF.type, RDF::V[e.value.location.first.capitalize]]
-      add_triple [email, RDF::V.email, e.value.to_s]
-    rescue Exception
-      puts e.inspect
-    end
+    add_triple [@subject, RDF::V.hasEmail, email]
+    add_triple [email, RDF.type, RDF::V.Email]
+    add_triple [email, RDF.type, RDF::V[e.value.location.first.capitalize]] unless e.value.location.length == 0
+    add_triple [email, RDF::V.email, e.value.to_s]
 	end
 	
 	def do_tel(e)
 		t = e.value
 		tel = RDF::Node.new
-    begin
-      add_triple [@subject, RDF::V.hasTelephone, tel]
-      add_triple [tel, RDF.type, RDF::V[t.location.first.capitalize]] unless t.location.nil?
-      add_triple [tel, RDF.type, RDF::V.Voice]
-      add_triple [tel, RDF::V.telephone, t.to_s]		
-    rescue Exception
-      puts t.location
-    end
+    add_triple [@subject, RDF::V.hasTelephone, tel]
+    add_triple [tel, RDF.type, RDF::V[t.location.first.capitalize]] unless t.location.length == 0
+    add_triple [tel, RDF.type, RDF::V.Voice]
+    add_triple [tel, RDF::V.telephone, t.to_s]		
 	end
 
 	def do_adr(e)
 		a = e.value
-		begin
-			adrs = RDF::Node.new
-			add_triple [@subject, RDF::V.hasAddress, adrs]
-			add_triple [adrs, RDF.type, RDF::V[a.location.first.capitalize]]
-			add_triple [adrs, RDF::V.locality, a.locality] unless a.locality.empty?
-			add_triple [adrs, RDF::V.country, (a.country.empty? ? "Australia" : a.country)]
-    rescue Exception
-      puts a.inspect
-		end
+    adrs = RDF::Node.new
+    add_triple [@subject, RDF::V.hasAddress, adrs]
+    add_triple [adrs, RDF.type, RDF::V[a.location.first.capitalize]] unless a.location.length == 0
+    add_triple [adrs, RDF::V.locality, a.locality] unless a.locality.empty?
+    add_triple [adrs, RDF::V.country, (a.country.empty? ? "Australia" : a.country)]
 	end
 
   def do_title(e)
@@ -167,48 +155,36 @@ class RDFVCard < VCardEventer
 		end				
 	end
 	
-  def map_relationship(property)
-    p = property
-    return p if property.instance_of?(RDF::URI)
-    case 
-      when property =~ /(website$)|(HomePage)|(profile)/i then p = RDF::FOAF.homepage 
-      when property =~ /company website$/i then p = RDF::FOAF.workplaceHomepage 
-      when property =~ /blog/i then p = RDF::FOAF.weblog
-      else p = RDF::RDFS.seeAlso
-    end
-    p
-  end
-
-	def lookup_range(property)
-		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::FOAF.knows
-		range = {:class => RDF::ORG.Organization, :identifier => RDF::SKOS.prefLabel } if property == RDF::NET.workedAt
-		range = {:class => RDF::ORG.Organization, :identifier => RDF::SKOS.prefLabel } if property == RDF::NET.worksAt
-		range = {:class => RDF::FOAF.Person, :identifier => RDF::FOAF.name } if property == RDF::NET.colleagueOf
-		raise ArgumentError, "Error: unrecognised property: #{property}" if range.nil?
-		range
-	end
-	
 	def process_groups
 		@group.each_pair do |group, entry|
+      # puts entry.inspect
 			property = RDF::Vocabulary.expand_curie(entry[:property])
 			object = RDF::Vocabulary.expand_curie(entry[:object])
-			return if object.nil?
+			next if object.nil?
 				
 			if object.instance_of?(RDF::URI)
         if property.instance_of?(RDF::URI)
+          # Case 4
           add_triple [@subject, property, object]
         else
+          # Case 2
           add_triple [@subject, RDF::RDFS.seeAlso, object]
         end
 			else
-        if property == RDF::NET.workedAt || property == RDF::NET.worksAt
-          add_triple [@subject, property, RDF::AJC["org-" + RDF.Map_URI(object)]]
-        elsif property == RDF::NET.colleagueOf
-          target = RDF::Node.new
-          add_triple [@subject, property, target]
-          add_triple [target, RDF.type, RDF::FOAF.Person]
-          add_triple [target, RDF::FOAF.name, object]
+        if property.instance_of?(RDF::URI)
+          # Case 3
+          if property == RDF::NET.workedAt || property == RDF::NET.worksAt
+            # Case 3b
+            add_triple [@subject, property, RDF::AJC["org-" + RDF.Map_URI(object)]]
+          else
+            # Case 3a
+            target = RDF::Node.new
+            add_triple [@subject, property, target]
+            add_triple [target, RDF.type, RDF::FOAF.Person]
+            add_triple [target, RDF::FOAF.name, object]
+          end
         else
+          # Case 1
           target = RDF::Node.new
           add_triple [@subject, RDF::FOAF.knows, target]
           add_triple [target, RDF.type, RDF::FOAF.Person]

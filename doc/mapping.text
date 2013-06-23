@@ -71,20 +71,42 @@ If the card is for an organisation:
 
 For the statement `X p Y`, we have the following cases:
 
-### Case 1 
+### Case 1: p is not a URI, Y is not a URI
 
-    p = manager | parent | child | foaf:knows | net:colleagueOf...
-
+e.g. `X son "John Smith" .`
 maps to
 
     X foaf:knows [ a foaf:Person; foaf:name Y ] .
 
-### Case 2
+### Case 2: p is not a URI, Y is a URI
 
-    p = net:workedAt | net:worksAt
-
+e.g. `X homepage <http://janesmith.info/> .`
 maps to
 
-    X p [ a org:Organization ; org:orgName Y ] .
+    X rdfs:seeAlso Y .
 
+### Case 3: p is a URI, Y is not a URI
+
+e.g. `X foaf:knows "Bob Evans" .`, `X net:workedAt "Telectronics" .`
+
+Case 3a: p == net:colleagueOf | foaf:knows
+maps to
+
+    X p [ a foaf:Person; foaf:name Y ] .
+
+Case 3b: p == net:worksAt | net:workedAt
+maps to
+
+    X p org:(map_uri Y)
+
+Case 3c: p is something else
+maps to
+
+
+### Case 4: p is a URI, Y is a URI
+
+e.g. `X dbo:team dbp:Geelong_Football_Club .`, `X net:drinks drink:Soy_latte .`
+maps to
+
+    X p Y
 
