@@ -8,44 +8,44 @@ GIT
 
 GIT
   remote: https://github.com/qoobaa/vcard.git
-  revision: 1f23988291d6263c371a66a72802fdc02e287be3
+  revision: 68b06febbf757fb8ac09724f3928741e21e2ed41
   specs:
-    vcard (0.2.3)
+    vcard (0.2.8)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.3.2)
+    addressable (2.3.4)
     agraph (0.2)
       transport (~> 1.0.5)
-    builder (3.1.4)
+    builder (3.2.2)
     configuration (1.3.2)
     daemons (1.1.9)
     diff-lcs (1.1.3)
     eventmachine (1.0.0)
     hashie (1.2.0)
-    json_pure (1.7.6)
+    json_pure (1.8.0)
     linkedin (0.3.7)
       hashie (~> 1.2)
       multi_json (~> 1.0)
       oauth (~> 0.4)
     markaby (0.7.2)
       builder (>= 2.0.0)
-    mime-types (1.19)
+    mime-types (1.23)
     multi_json (1.5.0)
     net-http-persistent (2.8)
     oauth (0.4.7)
-    rack (1.5.1)
-    rack-protection (1.3.2)
+    rack (1.5.2)
+    rack-protection (1.5.0)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
     rake (10.0.3)
-    rdf (0.3.11)
-      addressable (>= 2.2.6)
-    rdf-json (0.3.0)
-      json_pure (>= 1.4.2)
-      rdf (~> 0.3.0)
+    rdf (1.0.7)
+      addressable (>= 2.2)
+    rdf-json (1.0.0)
+      json_pure (>= 1.4)
+      rdf (>= 1.0)
     rdf-turtle (0.3.1)
       rdf (>= 0.3.11)
     rest-client (1.6.7)
@@ -58,20 +58,20 @@ GEM
     rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.12.2)
-    sinatra (1.3.3)
-      rack (~> 1.3, >= 1.3.6)
-      rack-protection (~> 1.2)
-      tilt (~> 1.3, >= 1.3.3)
-    sparql-client (0.3.1)
-      json_pure (>= 1.6.5)
-      net-http-persistent (>= 1.4.1)
-      rdf (>= 0.3.5)
+    sinatra (1.4.3)
+      rack (~> 1.4)
+      rack-protection (~> 1.4)
+      tilt (~> 1.3, >= 1.3.4)
+    sparql-client (1.0.4.1)
+      json_pure (>= 1.4)
+      net-http-persistent (>= 1.4)
+      rdf (>= 1.0)
     terminal-table (1.4.5)
     thin (1.5.0)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
-    tilt (1.3.3)
+    tilt (1.4.1)
     transport (1.0.6)
 
 PLATFORMS
@@ -82,16 +82,16 @@ DEPENDENCIES
   configuration
   dydra!
   linkedin (= 0.3.7)
-  markaby (= 0.7.2)
+  markaby
   rack-test
   rake
-  rdf (= 0.3.11)
-  rdf-json (= 0.3.0)
-  rdf-turtle (= 0.3.1)
-  rest-client (= 1.6.7)
+  rdf (= 1.0.7)
+  rdf-json
+  rdf-turtle
+  rest-client
   rspec
-  sinatra (= 1.3.3)
-  sparql-client (= 0.3.1)
+  sinatra
+  sparql-client
   terminal-table
   thin
-  vcard (= 0.2.3)!
+  vcard!

@@ -8,10 +8,10 @@ gem "rspec"
 gem "configuration"
 
 # RDF and data
-gem "rdf", "0.3.11"
-gem "rdf-turtle", "0.3.1"
-gem "rdf-json", "0.3.0"
-gem "vcard", "0.2.3", :git => "https://github.com/qoobaa/vcard.git"
+gem "rdf", "1.0.7"
+gem "rdf-turtle"
+gem "rdf-json"
+gem "vcard", :git => "https://github.com/qoobaa/vcard.git"
 gem "linkedin", "0.3.7"
 
 # Back end RDF store
@@ -19,12 +19,12 @@ gem 'dydra', :git => 'git://github.com/dydra/dydra.git'
 gem 'agraph'
 
 # SPARQL
-gem "rest-client", "1.6.7"
-gem "sparql-client", "0.3.1"
+gem "rest-client"
+gem "sparql-client"
 gem "terminal-table"
 
 # Web front end
-gem "sinatra", "1.3.3"
-gem "markaby", "0.7.2"
+gem "sinatra"
+gem "markaby"
 gem "thin"
 gem "rack-test"
