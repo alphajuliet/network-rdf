@@ -4,43 +4,47 @@ $:.unshift File.join(File.dirname(__FILE__))
 require 'rdf'
 require 'rdf/turtle'
 require 'sparql/client'
+require 'rest_client'
 require 'rexml/document'
 require 'my_prefixes'
 require 'optparse'
+require 'json'
 require 'terminal-table'
 require 'config'
 
 class SparqlClient
+
+  # Extract the basic SPARQL results
+  def SparqlClient.parse_json(json)
+    h = JSON.parse(json)
+    data = h['results']['bindings']
+    {
+      :headings => h['head']['vars'], 
+      :rows => data.map {|i| i.to_a.map {|x| x[1]['value']}}
+    }
+  end
 	
+  # Run a SELECT query
 	def SparqlClient.select(query_file, format=:text)
     store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = File.open(query_file, "r").read
 
+    response = RestClient.get Configuration.for('allegro').sparql, 
+      :accept => 'application/sparql-results+json', 
+      :params => { :query => RDF.Prefixes(:sparql) << query }
+
 		if format == :text
-			response = client.query(RDF.Prefixes(:sparql) + query)
-			output = []
-			header = response.variable_names
-			response.each_solution do |solution|
-				row = []
-				solution.each_binding do |name, value|
-					p = value.to_s
-					p = "<#{p}>" if value.kind_of? RDF::URI
-					row << p
-				end
-				output << row
-			end
-			Terminal::Table.new :headings => header, :rows => output
-		elsif format == :json
-			response = RestClient.get MyConfig.get('sparql-endpoint'), 
-				:accept => 'application/sparql-results+json', 
-				:params => { :query => RDF.Prefixes(:sparql) << query }
-			response
-		end
+      arr = SparqlClient.parse_json(response)
+			Terminal::Table.new arr
+    else
+      response
+    end
 	end
 
+  # Run a CONSTRUCT query
 	def SparqlClient.construct(query_file, format=:turtle)
-        store = Configuration.for('rdf_store').store
+    store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = File.open(query_file, "r").read
 		graph = RDF::Graph.new
@@ -48,15 +52,17 @@ class SparqlClient
 		graph.dump(format, :prefixes => RDF::PREFIX)
 	end
 	
+  # Run an INSERT query
 	def SparqlClient.insert(triples_file)
-        store = Configuration.for('rdf_store').store
+    store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = "INSERT DATA { " + File.open(triples_file, "r").read + " }"
 		client.query(RDF.Prefixes(:sparql) + "\n" + query)
 	end
 	
+  # Run a CLEAR query
 	def SparqlClient.clear(graph="DEFAULT")
-        store = Configuration.for('rdf_store').store
+    store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = "CLEAR #{graph}"
 		client.query(RDF.Prefixes(:sparql) + "\n" + query)
@@ -65,14 +71,15 @@ class SparqlClient
 end
 
 if __FILE__ == $0
-    if ARGV.length != 2
-        puts "Usage: #{__FILE__} <command> <file>"
+    if ARGV.length < 2
+        puts "Usage: #{__FILE__} <command> <file> [<format>]"
         exit -1
     end
     cmd = ARGV[0]
     target = ARGV[1]
-    puts SparqlClient.construct(target) if cmd.downcase == "construct"
-    puts SparqlClient.select(target) if cmd.downcase == "select"
+    format = ARGV[2] || "text"
+    puts SparqlClient.construct(target, format.to_sym) if cmd.downcase == "construct"
+    puts SparqlClient.select(target, format.to_sym) if cmd.downcase == "select"
 end
 
 # The End
