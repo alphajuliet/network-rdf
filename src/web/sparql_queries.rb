@@ -3,7 +3,7 @@
 module SparqlQueries
 
 	def query(&block)
-        store = Configuration.for('rdf_store').store
+    store = Configuration.for('rdf_store').store
 		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = yield
 		client.query(RDF.Prefixes(:sparql) + query)
@@ -13,8 +13,8 @@ module SparqlQueries
 		query = yield
 		puts query
 		response = RestClient.get MyConfig.get('sparql-endpoint'), 
-				:accept => 'application/sparql-results+json', 
-				:params => { :query => RDF.Prefixes(:sparql) << query }
+      :accept => 'application/sparql-results+json', 
+      :params => { :query => RDF.Prefixes(:sparql) << query }
 		response		
 	end
 	
@@ -69,13 +69,12 @@ module SparqlQueries
 			"SELECT ?property ?value
 			WHERE {
 				?a foaf:name \'#{params[:name]}\'.
-				?a gldp:card ?card .
 				{
-					?card ?property [ rdf:value ?value ] .
+					?a ?property [ rdf:value ?value ] .
 				}
 				UNION 
 				{ 
-					?card ?property [ v:locality ?value ] .
+					?a ?property [ v:locality ?value ] .
 				}
 				UNION
 				{
@@ -107,8 +106,7 @@ module SparqlQueries
 			"SELECT ?orgname (COUNT (?p) AS ?members)
 			WHERE {
 				?m a org:Membership .
-				?m org:organization ?org .
-				?org skos:prefLabel ?orgname .
+				?m org:organization [ skos:prefLabel ?orgname ] .
 				?m org:member ?p .
 			}
 			GROUP BY ?orgname
@@ -133,10 +131,9 @@ module SparqlQueries
 		query do
 			"SELECT ?name 
 			WHERE {
-				?card a v:VCard ;
-							v:fn ?name .
+        ?p v:fn ?name .
 				OPTIONAL { 
-					?card v:email ?e.
+					?p v:hasEmail ?e.
 				}
 				FILTER (!bound(?e))
 			}"

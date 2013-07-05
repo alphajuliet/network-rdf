@@ -34,9 +34,9 @@ def to_json(query_result)
 end	
 
 def render_on(template, result=nil)
-	if request.accept.include?('text/html')
+	if request.accept? 'text/html'
 		markaby template, :locals => { :result => result } 
-	elsif request.accept.include?('application/json')
+  else request.accept? 'application/json'
 		to_json(result) unless result.nil?
 	end
 end
