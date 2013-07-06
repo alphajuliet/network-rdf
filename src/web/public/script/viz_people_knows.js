@@ -1,7 +1,7 @@
 // viz_people_knows.js
 
 var width = 700, 
-		height = 500;
+		height = 700;
 
 var force = d3.layout.force()
     .charge(-200)
@@ -12,14 +12,15 @@ var force = d3.layout.force()
     
 function renderNetworkOn(svg) {
 	
-	d3.json("/people/knows", function (data) {
+	d3.json("/people/knows", function (json) {
+    var data = _.map(json.results.bindings, function(x) { return {"source": x.source.value, "target": x.target.value};});
 		var names = _.union( _.pluck(data, "source"), _.pluck(data, "target"));
 		var nodes = _.map(names, function (n, i) { return {"name": n}; });
 		// Map names to an index into the nodes
-		var links = _.map(data, function (link) {
+		var links = _.map(data, function (x) {
 				return {
-					"source": _.indexOf(names, link.source),
-					"target": _.indexOf(names, link.target)
+					"source": _.indexOf(names, x.source),
+					"target": _.indexOf(names, x.target)
 				}
 		});
 		console.log("Processed " + nodes.length + " nodes, " + links.length + " links.");
@@ -31,19 +32,19 @@ function renderNetworkOn(svg) {
 			.size([width, height])
 			.start();
 
-		var link = svg.selectAll(".link")
-				.data(links)
-			.enter().append("line")
-				.attr("class", "link");
-	
+    var link = svg.selectAll(".link")
+      .data(links)
+      .enter().append("line")
+      .attr("class", "link");
+
 		var node = svg.selectAll(".node")
-				.data(nodes)
+      .data(nodes)
 			.enter().append("g")
-				.attr("class", "node")
-				.call(force.drag);
+      .attr("class", "node")
+      .call(force.drag);
 			
 		node.append("circle")
-				.attr("r", 5);
+      .attr("r", 5);
 				
 		node.append("text")
 			.attr("dx", 10)
