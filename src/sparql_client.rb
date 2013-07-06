@@ -26,17 +26,15 @@ class SparqlClient
 	
   # Run a SELECT query
 	def SparqlClient.select(query_file, format=:text)
-    store = Configuration.for('rdf_store').store
-		client = SPARQL::Client.new(Configuration.for(store).sparql)
 		query = File.open(query_file, "r").read
 
-    response = RestClient.get Configuration.for('allegro').sparql, 
+    store = Configuration.for('rdf_store').store
+    response = RestClient.get Configuration.for(store).sparql, 
       :accept => 'application/sparql-results+json', 
       :params => { :query => RDF.Prefixes(:sparql) << query }
 
 		if format == :text
-      arr = SparqlClient.parse_json(response)
-			Terminal::Table.new arr
+			Terminal::Table.new SparqlClient.parse_json(response)
     else
       response
     end

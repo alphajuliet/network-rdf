@@ -9,9 +9,9 @@ html do
 		markaby :page_header
 		div.main! do
 			h1 "#{params[:name]}"
-			markaby :person_card, 	:locals => {:result => cmd_person_card}
-			markaby :person_org, 		:locals => {:result => cmd_person_org}
-			markaby :person_knows, 	:locals => {:result => cmd_person_knows}
+			markaby :person_card, 	:locals => {:result => parse_json(cmd_person_card)}
+			markaby :person_org, 		:locals => {:result => parse_json(cmd_person_org)}
+			markaby :person_knows, 	:locals => {:result => parse_json(cmd_person_knows)}
 		end
 	end
 end

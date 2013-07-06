@@ -16,37 +16,37 @@ function renderExampleOn(svg) {
 function renderCompanyDataOn(svg) {
 	var bar_height = 12, bar_spacing = 3;
 	var indent = 200;
-	d3.json("/org/count_by_person?min=2", function (result) {
-		console.log("Got " + result.length + " items.");
+	d3.json("/org/count_by_person?min=2", function (json) {
+		console.log("Got " + json.results.bindings.length + " items.");
 		svg.selectAll("rect")
-			.data(result)
+			.data(json.results.bindings)
 			.enter()
 			.append("rect")
 				.attr("x", indent)
 				.attr("y", function (d, index) { return index * (bar_height + bar_spacing); })
-				.attr("width", function (d, index) { return d.members * 10; })
+				.attr("width", function (d, index) { return d.members.value * 10; })
 				.attr("height", bar_height)
 				.attr("fill", "#ccccff")
 				;
-		svg.selectAll("text.label")
-			.data(result)
-			.enter()
-  		.append("text")
-				.text(function (d, i) { return d.orgname; })
-				.attr("class", "label")
-				.attr("x", 0)
-				.attr("y", function (d, i) { return i * (bar_height + bar_spacing); })
-				.attr("dy", 1+(bar_height + bar_spacing) / 2)
-				;
-		svg.selectAll("text.value")
-			.data(result)
+		svg.selectAll("text.value") // Numeric counts
+			.data(json.results.bindings)
 			.enter()
 			.append("text")
-				.text(function (d, i) { return d.members; })
+				.text(function (d, i) { return d.members.value; })
 				.attr("class", "value")
 				.attr("x", indent)
 				.attr("y", function (d, i) { return i * (bar_height + bar_spacing); })
 				.attr("dx", 2)
+				.attr("dy", 1+(bar_height + bar_spacing) / 2)
+				;
+		svg.selectAll("text.label") // Company name
+			.data(json.results.bindings)
+			.enter()
+  		.append("text")
+				.text(function (d, i) { return d.orgname.value; })
+				.attr("class", "label")
+				.attr("x", 0)
+				.attr("y", function (d, i) { return i * (bar_height + bar_spacing); })
 				.attr("dy", 1+(bar_height + bar_spacing) / 2)
 				;
 	});

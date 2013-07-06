@@ -2,17 +2,10 @@
 
 module SparqlQueries
 
-	def query(&block)
-    store = Configuration.for('rdf_store').store
-		client = SPARQL::Client.new(Configuration.for(store).sparql)
-		query = yield
-		client.query(RDF.Prefixes(:sparql) + query)
-	end
-
 	def query_json(&block)
 		query = yield
-		puts query
-		response = RestClient.get MyConfig.get('sparql-endpoint'), 
+    store = Configuration.for('rdf_store').store
+		response = RestClient.get Configuration.for(store).sparql, 
       :accept => 'application/sparql-results+json', 
       :params => { :query => RDF.Prefixes(:sparql) << query }
 		response		
@@ -25,7 +18,7 @@ module SparqlQueries
 	#----------------------------------------
 	# All the specific SPARQL queries
 	def cmd_people_names
-		query do
+		query_json do
 			"SELECT DISTINCT ?name
 			WHERE {
 				?p a foaf:Person .
@@ -36,7 +29,7 @@ module SparqlQueries
 	end
 	
 	def cmd_org_people
-		query do 
+		query_json do 
 			"SELECT ?name
 			WHERE {
 				?m a org:Membership .
@@ -48,7 +41,7 @@ module SparqlQueries
 	end
 		
 	def cmd_person_knows
-		query do
+		query_json do
 			"SELECT DISTINCT ?name 
 			WHERE {
 				{
@@ -65,7 +58,7 @@ module SparqlQueries
 	end
 	
 	def cmd_person_card
-		query do
+		query_json do
 			"SELECT ?property ?value
 			WHERE {
 				?a foaf:name \'#{params[:name]}\'.
@@ -85,24 +78,36 @@ module SparqlQueries
 					?a ?property ?value .
 					FILTER isIRI(?value)
 				}
+        FILTER (?property != foaf:knows)
 			}"
 		end
 	end
 	
 	def cmd_person_org
-		query do
+		query_json do
 			"SELECT ?name
 			WHERE {
-				?m a org:Membership .
-				?m org:organization [ skos:prefLabel ?name ] .
-				?m org:member [ foaf:name \'#{params[:name]}\' ].
+        ?p foaf:name \'#{params[:name]}\' .
+        {
+          ?m a org:Membership .
+          ?m org:organization [ skos:prefLabel ?name ] .
+          ?m org:member ?p .
+        }
+        UNION
+        {
+          ?p net:workedAt [ skos:prefLabel ?name ] .
+        }
+        UNION
+        {
+          ?p net:worksAt [ skos:prefLabel ?name ] .
+        }
 			}"
 		end		
 	end
 	
 	def cmd_org_count_by_person
-		min = params["min"] || 0;
-		query do
+		min = params[:min] || 0;
+		query_json do
 			"SELECT ?orgname (COUNT (?p) AS ?members)
 			WHERE {
 				?m a org:Membership .
@@ -116,7 +121,7 @@ module SparqlQueries
 	end
 	
 	def cmd_people_knows
-		query do
+		query_json do
 			"SELECT ?source ?target
 			WHERE {
 				?a foaf:name ?source .
@@ -128,7 +133,7 @@ module SparqlQueries
 	end
 	
 	def cmd_no_email
-		query do
+		query_json do
 			"SELECT ?name 
 			WHERE {
         ?p v:fn ?name .

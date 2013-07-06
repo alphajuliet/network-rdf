@@ -2,8 +2,8 @@
 
 if result.count > 0
 	h2 "Organisation"
-	result.each_solution do |solution|
-		solution.each_binding do |name, value|
+	result[:rows].each do |solution|
+		solution.each do |value|
 			p do 
 				a value.to_s, :href => "/org/#{value.to_s}/people"
 			end

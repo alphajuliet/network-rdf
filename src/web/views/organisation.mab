@@ -9,12 +9,12 @@ html do
 		markaby :page_header
 		div.main! do
 			h2 "#{params[:orgname]}"
-			result = cmd_org_people
+      p "#{result[:rows].count} people."
 			table do
 				tbody do
-					result.each_solution do |solution|
+					result[:rows].each do |solution|
 						tr do
-							solution.each_binding do |name, value|
+							solution.each do |value|
 								td do 
 									a value.to_s, :href => "/person/#{value.to_s}"
 								end

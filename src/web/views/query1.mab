@@ -8,17 +8,17 @@ html do
 	body do
 		markaby :page_header
 		div.main! do
-			p { "Found #{result.count} solutions."}
+			p { "Found #{result[:rows].count} solutions."}
 			table do
 				tbody do
 					tr do
-						result.variable_names.each do |name|
+						result[:headings].each do |name|
 							th name.to_s.capitalize
 						end
 					end
-					result.each_solution do |solution|
+					result[:rows].each do |solution|
 						tr do
-							solution.each_binding do |name, value| 
+							solution.each do |value| 
 								td do 
 									if value.kind_of? RDF::URI
 										a value.to_s, :href => value.to_s

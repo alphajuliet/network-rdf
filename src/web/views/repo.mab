@@ -8,10 +8,8 @@ html do
 	body do
 		markaby :page_header
 		div.main! do
-			h1 "Repository metadata"
-			@data.each do |key, value|
-				p "#{key}: #{value}"
-			end
+			h1 "Repository size"
+      p "#{result} triples."
 		end
 	end
 end
