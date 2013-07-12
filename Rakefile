@@ -164,21 +164,21 @@ end
 namespace :sparql do
 	desc "Run a SPARQL select query"
 	task :select, :query do |t, args|
-		src = File.join(ex_dir, args[:query] + ".sparql")
+		src = File.join(ex_dir, args[:query])
 		puts "# Running query from #{src}"
 		puts SparqlClient.select(src, :text)
 	end
 	
 	desc "Run a SPARQL construct query"
 	task :construct, :query do |t, args|
-		src = File.join(ex_dir, args[:query] + ".sparql")
+		src = File.join(ex_dir, args[:query])
 		puts "# Running query from #{src}"
 		puts SparqlClient.construct(src)
 	end
 	
 	desc "Run a SPARQL select returning JSON"
 	task :select_json, :query do |t, args|
-		src = File.join(ex_dir, args[:query] + ".sparql")
+		src = File.join(ex_dir, args[:query])
 		puts "# Running query from #{src}"
 		puts SparqlClient.select(src, :json)
 	end

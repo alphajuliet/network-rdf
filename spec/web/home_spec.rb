@@ -20,10 +20,10 @@ describe 'Home' do
     last_response.should be_ok
   end
   
-  it "returns info on a person" do
-  	get '/person/Jane%20Smith/card'
-  	last_response.should be_ok
-  end
+#  it "returns info on a person" do
+#  	get '/person/Jane%20Smith/card'
+#  	last_response.should be_ok
+#  end
   
 #  it "returns SPARQL as JSON" do
 #  	query = 'SELECT ?name ?number WHERE {
