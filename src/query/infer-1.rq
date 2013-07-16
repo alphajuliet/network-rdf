@@ -1,0 +1,11 @@
+# Infer that I know all the primary foaf:Person instances
+
+CONSTRUCT {
+  ?a foaf:knows ?b .
+} 
+WHERE {
+  ?a a foaf:Person ; 
+    v:fn "Andrew Joyner" .
+  ?b a foaf:Person ; 
+    v:fn _:x .
+}

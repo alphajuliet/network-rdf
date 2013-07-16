@@ -75,7 +75,7 @@ namespace :contacts do
 	task :infer do
 		puts "# Generating inferred statements and writing to #{inferred_ttl}"
 		File.open(inferred_ttl, "w+") do |out|
-			Dir.glob(File.join(query_dir, "infer*.sparql")) do |src|
+			Dir.glob(File.join(query_dir, "infer*.rq")) do |src|
 				puts "# Running query in #{src}"
 				out.write(SparqlClient.construct(src))
 			end
