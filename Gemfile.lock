@@ -85,7 +85,7 @@ DEPENDENCIES
   markaby
   rack-test
   rake
-  rdf (= 1.0.7)
+  rdf
   rdf-json
   rdf-turtle
   rest-client

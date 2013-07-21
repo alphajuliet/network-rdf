@@ -8,7 +8,7 @@ gem "rspec"
 gem "configuration"
 
 # RDF and data
-gem "rdf", "1.0.7"
+gem "rdf"
 gem "rdf-turtle"
 gem "rdf-json"
 gem "vcard", :git => "https://github.com/qoobaa/vcard.git"
