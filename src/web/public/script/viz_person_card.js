@@ -44,14 +44,14 @@ function renderPersonOn(svg, person) {
         .attr("class", "node");
 
     node.append("circle")
-      .attr("r", 8)
+      .attr("r", 12)
       .style("fill", function (d, i) { return i==0 ? "#f99" : "#99f" })
       .call(force.drag);
 			
     node.append("text")
       .text(function (d) { return d.name })
-      .attr("dx", 10)
-      .attr("dy", 10);
+      .attr("dx", 15)
+      .attr("dy", 15);
 			
 		force.on("tick", function() {
 			edge.attr("x1", function(d) { return d.source.x; })

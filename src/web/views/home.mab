@@ -33,7 +33,7 @@ html do
 				p { a "Network", :href => "/viz/people/knows" }
         p do
           span "Person: "
-					input :type => "text", :name => "person1", :value => "Jane Smith"
+					input :type => "text", :name => "person2", :value => "Jane Smith"
 					input :type => "button", :id => "cmd_viz_person", :value => "Details"
         end
 			end

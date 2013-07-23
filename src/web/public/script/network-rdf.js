@@ -17,7 +17,7 @@ function main() {
 	});
 
   $("input#cmd_viz_person").click(function () {
-      window.location = "viz/person/" + $("input[name=person1]").val();
+      window.location = "viz/person/" + $("input[name=person2]").val();
   });
 }
 
