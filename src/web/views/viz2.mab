@@ -11,7 +11,7 @@ html do
 	body do
 		markaby :page_header
 		div.main! do
-			h1 "Visualisation"
+			h1 "Who knows who"
 			div.viz! do
 				# Visualisation stuff here
 			end

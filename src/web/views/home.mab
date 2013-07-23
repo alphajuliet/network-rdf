@@ -31,6 +31,11 @@ html do
 				h1 "Visualise"
 				p { a "Org count by person", :href => "/viz/org/count_by_person" }
 				p { a "Network", :href => "/viz/people/knows" }
+        p do
+          span "Person: "
+					input :type => "text", :name => "person1", :value => "Jane Smith"
+					input :type => "button", :id => "cmd_viz_person", :value => "Details"
+        end
 			end
 			div.admin! do
 				h1 "Admin"

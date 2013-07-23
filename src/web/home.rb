@@ -9,8 +9,6 @@ require 'my_prefixes'
 require 'json'
 require 'web/sparql_queries'
 require 'web/admin_queries'
-require 'store/allegro'
-require 'store/dydra_store'
 require 'config'
 
 # Set up partial directory in template search path
@@ -50,7 +48,6 @@ def render_on(template, result=nil)
 	if request.accept? 'text/html'
 		markaby template, :locals => { :result => result } 
   else
-		# to_json(result) unless result.nil?
     result
 	end
 end
@@ -64,16 +61,20 @@ def render_json_on(template, result=nil)
 end
 
 #------------------------------
-# HTML and JSON formats
 get '/' 												do markaby :home end
+
+# HTML and JSON formats
 get '/people/names'							do render_json_on(:people, cmd_people_names) end
 get '/people/knows'							do render_json_on(:query1, cmd_people_knows) end
 get '/org/:orgname/people' 			do render_json_on(:organisation, cmd_org_people) end
 get '/org/count_by_person' 			do render_json_on(:query1, cmd_org_count_by_person) end
 get '/no-email' 								do render_json_on(:query1, cmd_no_email) end
+get '/repo'											do render_on(:repo, cmd_repo) end
+
+# Visualisations
 get '/viz/org/count_by_person'	do markaby :viz1 end
 get '/viz/people/knows'					do markaby :viz2 end
-get '/repo'											do render_on(:repo, cmd_repo) end
+get '/viz/person/:name'         do markaby :viz3 end
 
 # Composite views, no data
 get '/person/:name', 

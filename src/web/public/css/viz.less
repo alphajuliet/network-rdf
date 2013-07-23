@@ -1,8 +1,8 @@
 /* viz.less */
 
-@borderColour: #900;
+@borderColour: #666;
 @fillColour: lighten(@borderColour, 25%);
-@linkColour: #66f;
+@edgeColour: #66f;
 @textColour: #666;
 
 div#viz {
@@ -21,8 +21,11 @@ div#viz {
 	}
 }
 
-.link {
-  stroke: @linkColour;
+.edge {
+  stroke: @edgeColour;
   stroke-opacity: .8;
+  text {
+    color: #006;
+  }
 }
 

@@ -1,17 +1,24 @@
 // network-rdf.js
+// Requires jQuery and Underscore
 
-// var server = "http://192.168.0.2:4567/";
-var server = "";
+// Convert SPARQL results hash to a more concise hash, using the headings as
+// the keys
+function compressSPARQL (json) {
+  _.map(json.results.bindings, function (e) { return _.object(_.keys(e), _.values(e)) } )
+}
 
 function main() {
 	$("input#cmd_person_all").click(function () {
-			window.location = server + "person/" + $("input[name=person1]").val();
+			window.location = "person/" + $("input[name=person1]").val();
 	});
 
 	$("input#cmd_org_people").click(function () {
-			window.location = server + "org/" + $("input[name=org1]").val() + "/people";
+			window.location = "org/" + $("input[name=org1]").val() + "/people";
 	});
 
+  $("input#cmd_viz_person").click(function () {
+      window.location = "viz/person/" + $("input[name=person1]").val();
+  });
 }
 
 $(document).ready(function() {

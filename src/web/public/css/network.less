@@ -6,7 +6,7 @@
 	box-shadow: @d @d @d #ccc;
 }
 
-@heading-colour: #FF0066;
+@heading-colour: #c09;
 .heading-style {
 	font-family: "Helvetica Neue-UltraLight", "Helvetica Neue", Arial, sans-serif;
 	color: @heading-colour;
@@ -58,13 +58,13 @@ div#main {
 	overflow: auto;
 	h1 { font-weight: normal; }
 	div {
-		border: 1px solid #ccc;
 		margin: 0 0 5pt 0;
 		padding: 5pt 10pt;
 		h1,h2,h3 {
 			.heading-style;
 		}
 	}
+  p { margin-left: 20pt; }
 }
 
 table { font-size: 9pt;
@@ -86,4 +86,7 @@ input[type="button"] {
 	border: 1px solid #999;	
 	background-color: #eee;
 	padding: 1pt 5pt;
+}
+input[type="button"]:hover {
+  background-color: #cfc;
 }
